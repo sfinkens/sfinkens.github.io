@@ -1,0 +1,200 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Usage &#8212; pygac 0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Methods" href="methods.html" />
+    <link rel="prev" title="Installation" href="installation.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="methods.html" title="Methods"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="installation.html" title="Installation"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">pygac 0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Usage</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="usage">
+<h1>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h1>
+<section id="through-satpy">
+<h2>Through Satpy<a class="headerlink" href="#through-satpy" title="Permalink to this headline">¶</a></h2>
+<p>The preferred way of using Pygac is through <a class="reference external" href="https://satpy.readthedocs.io">Satpy</a>. Results are returned as
+dask-friendly <a class="reference external" href="https://xarray.pydata.org">xarray</a> DataArrays with proper dataset/coordinate names and
+additional metadata. It is also possible to select a user-defined range of
+scanlines. Furthermore, Satpy provides many options for resampling,
+visualizing and saving the data.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">satpy</span>
+
+<span class="c1"># Channel set for KLM satellites. For POD satellites the channels are</span>
+<span class="c1"># [&#39;1&#39;, &#39;2&#39;, &#39;3&#39;, &#39;4&#39;, &#39;5&#39;].</span>
+<span class="n">channels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;2&#39;</span><span class="p">,</span> <span class="s1">&#39;3a&#39;</span><span class="p">,</span> <span class="s1">&#39;3b&#39;</span><span class="p">,</span> <span class="s1">&#39;4&#39;</span><span class="p">,</span> <span class="s1">&#39;5&#39;</span><span class="p">]</span>
+<span class="n">ancillary</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;solar_zenith_angle&#39;</span><span class="p">,</span>
+             <span class="s1">&#39;sensor_zenith_angle&#39;</span><span class="p">,</span>
+             <span class="s1">&#39;solar_azimuth_angle&#39;</span><span class="p">,</span>
+             <span class="s1">&#39;sensor_azimuth_angle&#39;</span><span class="p">,</span>
+             <span class="s1">&#39;sun_sensor_azimuth_difference_angle&#39;</span><span class="p">,</span>
+             <span class="s1">&#39;qual_flags&#39;</span><span class="p">,</span>
+             <span class="s1">&#39;latitude&#39;</span><span class="p">,</span>
+             <span class="s1">&#39;longitude&#39;</span><span class="p">]</span>
+
+<span class="n">scene</span> <span class="o">=</span> <span class="n">satpy</span><span class="o">.</span><span class="n">Scene</span><span class="p">(</span><span class="n">filenames</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;NSS.GHRR.NP.D15361.S0121.E0315.B3547172.SV&#39;</span><span class="p">],</span>
+                    <span class="n">reader</span><span class="o">=</span><span class="s1">&#39;avhrr_l1b_gaclac&#39;</span><span class="p">,</span>
+                    <span class="n">reader_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;tle_dir&#39;</span><span class="p">:</span> <span class="s1">&#39;/path/to/tle/&#39;</span><span class="p">,</span>
+                                   <span class="s1">&#39;tle_name&#39;</span><span class="p">:</span> <span class="s1">&#39;TLE_</span><span class="si">%(satname)s</span><span class="s1">.txt&#39;</span><span class="p">})</span>
+<span class="n">scene</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">channels</span> <span class="o">+</span> <span class="n">ancillary</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For a list of Satpy reader keyword arguments see <a class="reference external" href="https://satpy.readthedocs.io/en/stable/api/satpy.readers.avhrr_l1b_gaclac.html?highlight=avhrr_l1b_gaclac">satpy.readers.avhrr_l1b_gaclac</a>
+and for further Pygac reader keyword arguments see <a class="reference internal" href="api.html#pygac.reader.Reader" title="pygac.reader.Reader"><code class="xref py py-class docutils literal notranslate"><span class="pre">pygac.reader.Reader</span></code></a>.
+Especially it is possible to choose a different version of calibration
+coefficients or even specify your own.</p>
+</section>
+<section id="direct-usage">
+<h2>Direct Usage<a class="headerlink" href="#direct-usage" title="Permalink to this headline">¶</a></h2>
+<p>Alternatively you can also use Pygac directly.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pygac</span> <span class="kn">import</span> <span class="n">get_reader_cls</span>
+
+<span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;NSS.GHRR.NP.D15361.S0121.E0315.B3547172.SV&#39;</span>
+<span class="n">reader_cls</span> <span class="o">=</span> <span class="n">get_reader_cls</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+<span class="n">reader</span> <span class="o">=</span> <span class="n">reader_cls</span><span class="p">(</span><span class="n">tle_dir</span><span class="o">=</span><span class="s1">&#39;/path/to/tle&#39;</span><span class="p">,</span> <span class="n">tle_name</span><span class="o">=</span><span class="s1">&#39;TLE_</span><span class="si">%(satname)s</span><span class="s1">.txt&#39;</span><span class="p">)</span>
+<span class="n">reader</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+
+<span class="n">channels</span> <span class="o">=</span> <span class="n">reader</span><span class="o">.</span><span class="n">get_calibrated_channels</span><span class="p">()</span>
+<span class="n">lons</span><span class="p">,</span> <span class="n">lats</span> <span class="o">=</span> <span class="n">reader</span><span class="o">.</span><span class="n">get_lonlat</span><span class="p">()</span>
+<span class="n">scanline_times</span> <span class="o">=</span> <span class="n">reader</span><span class="o">.</span><span class="n">get_times</span><span class="p">()</span>
+<span class="n">bad_quality_lines</span> <span class="o">=</span> <span class="n">reader</span><span class="o">.</span><span class="n">mask</span>
+</pre></div>
+</div>
+</section>
+<section id="legacy-cli">
+<h2>Legacy CLI<a class="headerlink" href="#legacy-cli" title="Permalink to this headline">¶</a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Usage of the legacy command line program <code class="docutils literal notranslate"><span class="pre">pygac-run</span></code> is deprecated in
+favour of the above options.</p>
+</aside>
+<p>There is also a legacy command line program <code class="docutils literal notranslate"><span class="pre">pygac-run</span></code> which saves the
+results to HDF5 and requires a configuration file.</p>
+<p>Copy the template file <code class="docutils literal notranslate"><span class="pre">etc/pygac.cfg.template</span></code> to <code class="docutils literal notranslate"><span class="pre">pygac.cfg</span></code> and place
+it in a directory as you please. Set the environment variable <code class="docutils literal notranslate"><span class="pre">PYGAC_CONFIG_FILE</span></code>
+pointing to the file. e.g.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">PYGAC_CONFIG_FILE</span><span class="o">=</span>/home/user/pygac.cfg<span class="p">;</span> <span class="nb">export</span> PYGAC_CONFIG_FILE
+</pre></div>
+</div>
+<p>Also adapt the configuration file to your needs. The <code class="docutils literal notranslate"><span class="pre">tledir</span></code> parameter should
+be set to where your Two Line Element (TLE) files are located.</p>
+<p>Then call <code class="docutils literal notranslate"><span class="pre">pygac-run</span></code> on a GAC/LAC file.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pygac-run testdata/NSS.GHRR.NL.D02187.S1904.E2058.B0921517.GC <span class="m">0</span> <span class="m">0</span>
+</pre></div>
+</div>
+<p>The last two digits are the start and end scanline numbers, thus specifying the
+portion of the GAC orbit that user wants to process. The first scanline number
+starts at 0. If zeroes are specified at both locations, then the entire orbit
+will be processed.</p>
+<p>The result will be three hdf5 files, one with the calibrated AVHRR data,
+the other with sun-satellite viewing geometry data and this third with
+scanline quality information.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Usage</a><ul>
+<li><a class="reference internal" href="#through-satpy">Through Satpy</a></li>
+<li><a class="reference internal" href="#direct-usage">Direct Usage</a></li>
+<li><a class="reference internal" href="#legacy-cli">Legacy CLI</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="installation.html"
+                        title="previous chapter">Installation</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="methods.html"
+                        title="next chapter">Methods</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/usage.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="methods.html" title="Methods"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="installation.html" title="Installation"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">pygac 0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Usage</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2014, Abhay Devasthale, Martin Raspaud and Adam Dybbroe.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.1.
+    </div>
+  </body>
+</html>

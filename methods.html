@@ -1,0 +1,231 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Methods &#8212; pygac 0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="The Pygac API" href="api.html" />
+    <link rel="prev" title="Usage" href="usage.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="api.html" title="The Pygac API"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="usage.html" title="Usage"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">pygac 0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Methods</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="methods">
+<h1>Methods<a class="headerlink" href="#methods" title="Permalink to this headline">¶</a></h1>
+<section id="calibration">
+<h2>Calibration<a class="headerlink" href="#calibration" title="Permalink to this headline">¶</a></h2>
+<p>At present, calibration coefficients provided by Andrew Heidinger
+(NOAA) under SCOPE-CM project are applied for all satellites. The current
+version is <em>PATMOS-x, v2017r1</em>, including provisional coefficients for MetOp-C.</p>
+<p>The solar channel calibration (Channels 1 and 2, and Channel 3a if available)
+takes into account inter-satellite differences and is derived using
+amalgamation of different calibration references including the most recent
+MODIS Collection 6 data, in-situ targets, and simultaneous nadir
+observations. The detailed methodology is presented in Heidinger et al.
+(2010). The resulting (inter)calibration coefficients are of highest quality
+and follow the Global Climate Observing System (GCOS) standards for
+deriving fundamental climate data records.</p>
+<p>The reflectances are normalized by a factor (as a function of day of a year)
+to account for changing Earth-Sun distance. However, it is left to the
+user to apply further normalization using cosine of solar zenith
+angle (depending on application in question).</p>
+<p>The thermal channel intercalibration is done from scratch, starting from
+obtaining Platinum Resistance Thermometer (PRT), space and Internal
+Calibration Target (ICT, blackbody) counts. ICT temperatures are obtained
+from PRT counts based on coefficients provided in the POD and KLM Data User
+Guides (Kidwell, 2000). For each thermal channel, a smoothing window of 51
+successive PRT, ICT and space counts is used to obtain robust gain values and
+to dampen undue high frequency fluctuations in the count data (Trishchenko,
+2002). This window size is easily configurable to suit user needs. Section
+7.1.2.5 of <a class="reference external" href="https://www.ncei.noaa.gov/pub/data/satellite/publications/podguides/TIROS-N%20thru%20N-14/">KLM User Guide</a> presents the summary of equations implemented
+in Pygac to calibrate thermal channels, including non-linearity correction
+(Walton et al. 1998).</p>
+<p>The PRT readings are supposed to be present in a specific order, for example,
+the reset value followed by four readings from the PRTs. However, this may
+not always be the case for orbits that contain data gaps or due to any other
+unexplained reason. If not taken into account properly, this irregularity
+could result in the underestimation of brightness temperatures, when
+calibration information is smoothed over many scanlines. In Pygac, this
+inconsistency is handled properly while calibrating thermal channels.</p>
+<p>In some cases it was found that, apart from the reset values, even the
+readings from any one of the four PRTs could also have very low suspicious
+values. This could also seriously affect the computation of brightness
+temperatures. Pygac detects such anomalies and corrects them using
+interpolation of nearby valid PRT readings.</p>
+</section>
+<section id="geolocation">
+<h2>Geolocation<a class="headerlink" href="#geolocation" title="Permalink to this headline">¶</a></h2>
+<p>Each GAC row has total 409 pixels. But lat-lon values are provided for every
+eigth pixel starting from pixel 5 and ending at pixel 405. Using Numpy, Scipy
+and Pyresample packages, inter- and extrapolation is carried out to obtain
+geolocation for each pixel along the scanline.</p>
+<p>If the GAC data belongs to POD family, then clock drift errors are used to
+adjust existing Lat-Lon information. Here, Pygac makes use of <a class="reference external" href="https://pyorbital.readthedocs.io">PyOrbital</a>
+package. Pygac interpolates the clock offset and adjusts the nominal scan
+times to the actual scan times. Since the geolocation was computed using the
+nominal scan times, Pygacinterpolates the latitudes and longitudes to the
+actual scan times using spherical linear interpolation, aka slerp. However,
+in the case of a clock drift error greater than the scan rate of the dataset,
+the latitude and longitude for each pixel of the scan lines that cannot have
+an interpolated geolocation (typically at the start or end of the dataset)
+are recomputed. This is done using pyorbital, which in turn uses TLEs to
+compute the position of the satellite at each scan time and the instrument
+geometry compute the longitude and latitude of each pixel of the dataset.
+Since this operation can be quite costly, the interpolation is preferred
+whenever possible.</p>
+</section>
+<section id="computation-of-angles">
+<h2>Computation of Angles<a class="headerlink" href="#computation-of-angles" title="Permalink to this headline">¶</a></h2>
+<p>The azimuth angles are calculated using <a class="reference external" href="https://pyorbital.readthedocs.io/en/latest/#pyorbital.astronomy.get_alt_az">get_alt_az</a> and <a class="reference external" href="https://pyorbital.readthedocs.io/en/latest/#pyorbital.orbital.Orbital.get_observer_look">get_observer_look</a>
+from pyorbital. The azimuth described in the link is measured as clockwise
+from North instead of counter-clockwise from South. Counter clockwise from
+south would be the standard for a right-handed orthogonal coordinate system.
+Pygac was updated to use the same definition for angles as pyorbital (2019,
+September, version &gt; 1.1.0). Previous versions used azimuth +/-180 degrees,
+which correspond to degrees clockwise from south. All angles are converted to
+degrees. All azimuth angles are converted to range ]-180, 180] (2019 October
+version &gt; 1.1.0 ). Note that ]-180, 180] is an open interval.</p>
+</section>
+<section id="correction-of-satellite-location">
+<h2>Correction of Satellite Location<a class="headerlink" href="#correction-of-satellite-location" title="Permalink to this headline">¶</a></h2>
+<p>Whenever possible, Pygac uses RPY corrections along with other orbital
+parameters to compute accurate satellite location (e.g. instead of assuming
+constant altitude). However, RPY corrections are not available for all NOAA
+satellites. In case of the majority of the POD family satellites, these
+corrections are set to zero.</p>
+</section>
+<section id="correction-of-scanline-timestamps">
+<h2>Correction of Scanline Timestamps<a class="headerlink" href="#correction-of-scanline-timestamps" title="Permalink to this headline">¶</a></h2>
+<p>The geolocation in Pygac depends on accurate scanline timestamps. However,
+these may be corrupt, especially for older sensors. Assuming a constant
+scanning rate, Pygac attempts to fix them using extrapolation based on the scan
+line number and a reference time.</p>
+<p>Finding the right reference time is difficult due to the multitude of
+possible timestamp corruptions. But the combination of the following three
+options proved to be a robust reference in many situations:
+Timestamp of the first scanline, median time offset of all scanlines and header
+timestamp. See
+<a class="reference internal" href="api.html#pygac.reader.Reader.correct_times_median" title="pygac.reader.Reader.correct_times_median"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pygac.reader.Reader.correct_times_median()</span></code></a> and
+<a class="reference internal" href="api.html#pygac.reader.Reader.correct_times_thresh" title="pygac.reader.Reader.correct_times_thresh"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pygac.reader.Reader.correct_times_thresh()</span></code></a>
+for details.</p>
+<p>Finally, not only timestamps but also scanline numbers may be corrupt.
+Therefor lines with erroneous scanline numbers are removed before
+extrapolation, see <a class="reference internal" href="api.html#pygac.reader.Reader.correct_scan_line_numbers" title="pygac.reader.Reader.correct_scan_line_numbers"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pygac.reader.Reader.correct_scan_line_numbers()</span></code></a>.</p>
+</section>
+<section id="scan-motor-issue">
+<h2>Scan-Motor-Issue<a class="headerlink" href="#scan-motor-issue" title="Permalink to this headline">¶</a></h2>
+<p>Between 2001 and 2004 GAC data from NOAA-14, NOAA-15, and NOAA-16 frequently
+contain a significant amount of noise towards an edge of the swath. As
+reported by <a class="reference external" href="https://climate.esa.int/media/documents/Cloud_Technical-Report-AVHRR-GAC-FCDR-generation_v1.0.pdf">Schlundt et al (2017)</a>, section 5.2, this is probably caused by a
+temporary scan-motor issue. Pygac tries to identify and mask affected pixels.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Methods</a><ul>
+<li><a class="reference internal" href="#calibration">Calibration</a></li>
+<li><a class="reference internal" href="#geolocation">Geolocation</a></li>
+<li><a class="reference internal" href="#computation-of-angles">Computation of Angles</a></li>
+<li><a class="reference internal" href="#correction-of-satellite-location">Correction of Satellite Location</a></li>
+<li><a class="reference internal" href="#correction-of-scanline-timestamps">Correction of Scanline Timestamps</a></li>
+<li><a class="reference internal" href="#scan-motor-issue">Scan-Motor-Issue</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="usage.html"
+                        title="previous chapter">Usage</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="api.html"
+                        title="next chapter">The Pygac API</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/methods.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="api.html" title="The Pygac API"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="usage.html" title="Usage"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">pygac 0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Methods</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2014, Abhay Devasthale, Martin Raspaud and Adam Dybbroe.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.1.
+    </div>
+  </body>
+</html>

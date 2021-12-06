@@ -1,0 +1,628 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Legacy Output &#8212; pygac 0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="The Pygac API" href="api.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="api.html" title="The Pygac API"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">pygac 0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Legacy Output</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="legacy-output">
+<h1>Legacy Output<a class="headerlink" href="#legacy-output" title="Permalink to this headline">¶</a></h1>
+<section id="gac-i-o-module">
+<h2>GAC I/O module<a class="headerlink" href="#gac-i-o-module" title="Permalink to this headline">¶</a></h2>
+<p>The I/O module generates three HDF5 files, one containing reflectances,
+brightness temperatures, and lat/lon information. The other output file
+contains solar and satellite zenith and azimuth angles. And the third file
+contains quality flags.</p>
+<p>The output file name format is:</p>
+<p><code class="docutils literal notranslate"><span class="pre">ECC_GAC_avhrr_satellitename_99999_yyyymmddThhmmsstZ_yyyymmddThhmmsstZ.h5</span></code></p>
+<p>and</p>
+<p><code class="docutils literal notranslate"><span class="pre">ECC_GAC_sunsatangles_satellitename_99999_yyyymmddThhmmsstZ_yyyymmddThhmmsstZ.h5</span></code></p>
+<p>and</p>
+<p><code class="docutils literal notranslate"><span class="pre">ECC_GAC_qualflags_satellitename_99999_yyyymmddThhmmsstZ_yyyymmddThhmmsstZ.h5</span></code></p>
+<p>where,</p>
+<p><code class="docutils literal notranslate"><span class="pre">ECC</span></code>: ESA CCI Clouds (This prefix can be changed/specified by the user)</p>
+<p><code class="docutils literal notranslate"><span class="pre">avhrr</span></code>: denoting that it contains reflectances and BTs</p>
+<p><code class="docutils literal notranslate"><span class="pre">sunsatangles</span></code>: denoting that it contains angles</p>
+<p><code class="docutils literal notranslate"><span class="pre">qualflags</span></code>: denoting that it contains quality flag information</p>
+<p><code class="docutils literal notranslate"><span class="pre">yyyymmddThhmmsstZ</span></code>: yy:year, mm:month, dd:day, hh:hour, mm:min, ss:sec, t:tenth of second (for the start and the end of the orbit).</p>
+<p>Letters <code class="docutils literal notranslate"><span class="pre">T</span></code> and <code class="docutils literal notranslate"><span class="pre">Z</span></code> are separators for time info.</p>
+<p>The value of <code class="docutils literal notranslate"><span class="pre">99999</span></code> is currently used instead of providing actual orbit
+number.</p>
+<p>Appendices A, B and C provide detailed format of these files, including
+variable names, scaling, etc.</p>
+<p>The start and end times in the header and in actual L1b data can be different
+for orbits. The mismatch can range from few milliseconds to days. It was
+decided to trust the time stamps in L1b data in Pygac. After reorganizing
+based on scanline numbers (see issue highlighted above), the time stamps
+from the first and the last scanlines are taken as start and end times.</p>
+<p>In some orbits, the latitude and longitude information contains corrupt
+values for a part/s of the orbit and these scanlines are not flagged in the
+corresponding scanline-by-scaline quality flags. Currently, Pygac uses only
+a simple if_else construct to constrain valid range. Further improvement could
+be done using extra- and interpolation techniques.</p>
+<p>For extremely warm and cold temperatures, the channel 3b is saturating
+producing irrelevant brightness temperatures. Such saturation is often not
+flagged in quality information. Pygac currently uses a simple if_else
+construct to constrain valid range of Bts (170.0K&lt;BT&lt;350.0K). Such condition
+is also applied to split-window channels.</p>
+<span class="target" id="module-pygac.gac_io"></span><dl class="py function">
+<dt class="sig sig-object py" id="pygac.gac_io.avhrrGAC_io">
+<span class="sig-prename descclassname"><span class="pre">pygac.gac_io.</span></span><span class="sig-name descname"><span class="pre">avhrrGAC_io</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">satellite_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xutcs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">startdate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enddate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">starttime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">endtime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arrLat_full</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arrLon_full</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bt3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bt4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bt5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arrSZA</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arrSTZ</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arrSAA</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arrSTA</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arrRAA</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qual_flags</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_number_of_scan_lines</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">last_scan_line_number</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">corr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gac_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">midnight_scanline</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">miss_lines</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_file_prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">avhrr_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qual_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sunsatangles_dir</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygac.gac_io.avhrrGAC_io" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pygac.gac_io.save_gac">
+<span class="sig-prename descclassname"><span class="pre">pygac.gac_io.</span></span><span class="sig-name descname"><span class="pre">save_gac</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">satellite_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xutcs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lats</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lons</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bt3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bt4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bt5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sun_zen</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sat_zen</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sun_azi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sat_azi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rel_azi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qual_flags</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gac_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meta_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_file_prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">avhrr_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qual_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sunsatangles_dir</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygac.gac_io.save_gac" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="supplement-a-structure-of-an-output-file-containing-reflectances-and-brightness-temperatures">
+<h2>Supplement A: Structure of an output file containing reflectances and brightness temperatures<a class="headerlink" href="#supplement-a-structure-of-an-output-file-containing-reflectances-and-brightness-temperatures" title="Permalink to this headline">¶</a></h2>
+<p>Input: L1b file: <code class="docutils literal notranslate"><span class="pre">NSS.GHRR.NN.D06279.S1800.E1955.B0711012.GC</span></code></p>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Group</span> <span class="n">how</span> <span class="p">{</span>
+   <span class="n">variables</span><span class="p">:</span>
+     <span class="n">char</span> <span class="n">channel_list</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">9</span><span class="p">);</span>
+       <span class="p">:</span><span class="n">_lastModified</span> <span class="o">=</span> <span class="s2">&quot;2014-10-29T13:55:05Z&quot;</span><span class="p">;</span>
+
+   <span class="n">how</span><span class="p">:</span><span class="n">yaw_error</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">;</span> <span class="o">//</span> <span class="n">double</span>
+   <span class="n">how</span><span class="p">:</span><span class="n">roll_error</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">;</span> <span class="o">//</span> <span class="n">double</span>
+   <span class="n">how</span><span class="p">:</span><span class="n">pich_error</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">;</span> <span class="o">//</span> <span class="n">double</span>
+   <span class="n">how</span><span class="p">:</span><span class="n">startepochs</span> <span class="o">=</span> <span class="mi">1160157611</span><span class="n">L</span><span class="p">;</span> <span class="o">//</span> <span class="n">long</span>
+   <span class="n">how</span><span class="p">:</span><span class="n">endepochs</span> <span class="o">=</span> <span class="mi">1160164510</span><span class="n">L</span><span class="p">;</span> <span class="o">//</span> <span class="n">long</span>
+   <span class="n">how</span><span class="p">:</span><span class="n">platform</span> <span class="o">=</span> <span class="s2">&quot;noaa18&quot;</span><span class="p">;</span>
+   <span class="n">how</span><span class="p">:</span><span class="n">instrument</span> <span class="o">=</span> <span class="s2">&quot;avhrr&quot;</span><span class="p">;</span>
+   <span class="n">how</span><span class="p">:</span><span class="n">orbit_number</span> <span class="o">=</span> <span class="mi">99999</span><span class="p">;</span> <span class="o">//</span> <span class="nb">int</span>
+   <span class="n">how</span><span class="p">:</span><span class="n">software</span> <span class="o">=</span> <span class="s2">&quot;pyGAC&quot;</span><span class="p">;</span>
+   <span class="n">how</span><span class="p">:</span><span class="n">version</span> <span class="o">=</span> <span class="s2">&quot;1.0&quot;</span><span class="p">;</span>
+ <span class="p">}</span>
+
+ <span class="n">Group</span> <span class="n">image1</span> <span class="p">{</span>
+   <span class="n">variables</span><span class="p">:</span>
+     <span class="n">short</span> <span class="n">data</span><span class="p">(</span><span class="mi">13686</span><span class="p">,</span> <span class="mi">409</span><span class="p">);</span>
+       <span class="p">:</span><span class="n">_lastModified</span> <span class="o">=</span> <span class="s2">&quot;2014-10-29T13:55:05Z&quot;</span><span class="p">;</span>
+
+   <span class="n">Group</span> <span class="n">how</span> <span class="p">{</span>
+     <span class="n">how</span><span class="p">:</span><span class="n">sun_earth_distance_correction_applied</span> <span class="o">=</span> <span class="s2">&quot;TRUE&quot;</span><span class="p">;</span>
+     <span class="n">how</span><span class="p">:</span><span class="n">sun_earth_distance_correction_factor</span> <span class="o">=</span> <span class="mf">0.9982412208987179</span><span class="p">;</span> <span class="o">//</span> <span class="n">double</span>
+   <span class="p">}</span>
+
+   <span class="n">Group</span> <span class="n">what</span> <span class="p">{</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">product</span> <span class="o">=</span> <span class="s2">&quot;SATCH&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">quantity</span> <span class="o">=</span> <span class="s2">&quot;REFL&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">dataset_name</span> <span class="o">=</span> <span class="s2">&quot;Channel 1 reflectance&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">units</span> <span class="o">=</span> <span class="s2">&quot;%&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">gain</span> <span class="o">=</span> <span class="mf">0.01</span><span class="n">f</span><span class="p">;</span> <span class="o">//</span> <span class="nb">float</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">offset</span> <span class="o">=</span> <span class="mf">0.0</span><span class="n">f</span><span class="p">;</span> <span class="o">//</span> <span class="nb">float</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">missingdata</span> <span class="o">=</span> <span class="o">-</span><span class="mi">32001</span><span class="p">;</span> <span class="o">//</span> <span class="nb">int</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">nodata</span> <span class="o">=</span> <span class="o">-</span><span class="mi">32001</span><span class="p">;</span> <span class="o">//</span> <span class="nb">int</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">starttime</span> <span class="o">=</span> <span class="s2">&quot;180011&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">endtime</span> <span class="o">=</span> <span class="s2">&quot;195510&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">startdate</span> <span class="o">=</span> <span class="s2">&quot;20061006&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">enddate</span> <span class="o">=</span> <span class="s2">&quot;20061006&quot;</span><span class="p">;</span>
+   <span class="p">}</span>
+
+   <span class="n">image1</span><span class="p">:</span><span class="n">channel</span> <span class="o">=</span> <span class="s2">&quot;1&quot;</span><span class="p">;</span>
+   <span class="n">image1</span><span class="p">:</span><span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;AVHRR ch1&quot;</span><span class="p">;</span>
+ <span class="p">}</span>
+
+ <span class="n">Group</span> <span class="n">image2</span> <span class="p">{</span>
+   <span class="n">variables</span><span class="p">:</span>
+     <span class="n">short</span> <span class="n">data</span><span class="p">(</span><span class="mi">13686</span><span class="p">,</span> <span class="mi">409</span><span class="p">);</span>
+       <span class="p">:</span><span class="n">_lastModified</span> <span class="o">=</span> <span class="s2">&quot;2014-10-29T13:55:05Z&quot;</span><span class="p">;</span>
+
+   <span class="n">Group</span> <span class="n">how</span> <span class="p">{</span>
+     <span class="n">how</span><span class="p">:</span><span class="n">sun_earth_distance_correction_applied</span> <span class="o">=</span> <span class="s2">&quot;TRUE&quot;</span><span class="p">;</span>
+     <span class="n">how</span><span class="p">:</span><span class="n">sun_earth_distance_correction_factor</span> <span class="o">=</span> <span class="mf">0.9982412208987179</span><span class="p">;</span> <span class="o">//</span> <span class="n">double</span>
+   <span class="p">}</span>
+
+   <span class="n">Group</span> <span class="n">what</span> <span class="p">{</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">product</span> <span class="o">=</span> <span class="s2">&quot;SATCH&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">quantity</span> <span class="o">=</span> <span class="s2">&quot;REFL&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">dataset_name</span> <span class="o">=</span> <span class="s2">&quot;Channel 2 reflectance&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">units</span> <span class="o">=</span> <span class="s2">&quot;%&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">gain</span> <span class="o">=</span> <span class="mf">0.01</span><span class="n">f</span><span class="p">;</span> <span class="o">//</span> <span class="nb">float</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">offset</span> <span class="o">=</span> <span class="mf">0.0</span><span class="n">f</span><span class="p">;</span> <span class="o">//</span> <span class="nb">float</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">missingdata</span> <span class="o">=</span> <span class="o">-</span><span class="mi">32001</span><span class="p">;</span> <span class="o">//</span> <span class="nb">int</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">nodata</span> <span class="o">=</span> <span class="o">-</span><span class="mi">32001</span><span class="p">;</span> <span class="o">//</span> <span class="nb">int</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">starttime</span> <span class="o">=</span> <span class="s2">&quot;180011&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">endtime</span> <span class="o">=</span> <span class="s2">&quot;195510&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">startdate</span> <span class="o">=</span> <span class="s2">&quot;20061006&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">enddate</span> <span class="o">=</span> <span class="s2">&quot;20061006&quot;</span><span class="p">;</span>
+   <span class="p">}</span>
+
+   <span class="n">image2</span><span class="p">:</span><span class="n">channel</span> <span class="o">=</span> <span class="s2">&quot;2&quot;</span><span class="p">;</span>
+   <span class="n">image2</span><span class="p">:</span><span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;AVHRR ch2&quot;</span><span class="p">;</span>
+ <span class="p">}</span>
+
+ <span class="n">Group</span> <span class="n">image3</span> <span class="p">{</span>
+   <span class="n">variables</span><span class="p">:</span>
+     <span class="n">short</span> <span class="n">data</span><span class="p">(</span><span class="mi">13686</span><span class="p">,</span> <span class="mi">409</span><span class="p">);</span>
+       <span class="p">:</span><span class="n">_lastModified</span> <span class="o">=</span> <span class="s2">&quot;2014-10-29T13:55:05Z&quot;</span><span class="p">;</span>
+
+   <span class="n">Group</span> <span class="n">how</span> <span class="p">{</span>
+   <span class="p">}</span>
+
+   <span class="n">Group</span> <span class="n">what</span> <span class="p">{</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">product</span> <span class="o">=</span> <span class="s2">&quot;SATCH&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">quantity</span> <span class="o">=</span> <span class="s2">&quot;TB&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">dataset_name</span> <span class="o">=</span> <span class="s2">&quot;Channel 3b brightness temperature&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">units</span> <span class="o">=</span> <span class="s2">&quot;K&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">gain</span> <span class="o">=</span> <span class="mf">0.01</span><span class="n">f</span><span class="p">;</span> <span class="o">//</span> <span class="nb">float</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">offset</span> <span class="o">=</span> <span class="mf">273.15</span><span class="n">f</span><span class="p">;</span> <span class="o">//</span> <span class="nb">float</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">missingdata</span> <span class="o">=</span> <span class="o">-</span><span class="mi">32001</span><span class="p">;</span> <span class="o">//</span> <span class="nb">int</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">nodata</span> <span class="o">=</span> <span class="o">-</span><span class="mi">32001</span><span class="p">;</span> <span class="o">//</span> <span class="nb">int</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">starttime</span> <span class="o">=</span> <span class="s2">&quot;180011&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">endtime</span> <span class="o">=</span> <span class="s2">&quot;195510&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">startdate</span> <span class="o">=</span> <span class="s2">&quot;20061006&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">enddate</span> <span class="o">=</span> <span class="s2">&quot;20061006&quot;</span><span class="p">;</span>
+   <span class="p">}</span>
+
+   <span class="n">image3</span><span class="p">:</span><span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;AVHRR ch3b&quot;</span><span class="p">;</span>
+   <span class="n">image3</span><span class="p">:</span><span class="n">channel</span> <span class="o">=</span> <span class="s2">&quot;3b&quot;</span><span class="p">;</span>
+ <span class="p">}</span>
+
+ <span class="n">Group</span> <span class="n">image4</span> <span class="p">{</span>
+   <span class="n">variables</span><span class="p">:</span>
+     <span class="n">short</span> <span class="n">data</span><span class="p">(</span><span class="mi">13686</span><span class="p">,</span> <span class="mi">409</span><span class="p">);</span>
+       <span class="p">:</span><span class="n">_lastModified</span> <span class="o">=</span> <span class="s2">&quot;2014-10-29T13:55:05Z&quot;</span><span class="p">;</span>
+
+   <span class="n">Group</span> <span class="n">how</span> <span class="p">{</span>
+   <span class="p">}</span>
+
+   <span class="n">Group</span> <span class="n">what</span> <span class="p">{</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">product</span> <span class="o">=</span> <span class="s2">&quot;SATCH&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">quantity</span> <span class="o">=</span> <span class="s2">&quot;TB&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">dataset_name</span> <span class="o">=</span> <span class="s2">&quot;Channel 4 brightness temperature&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">units</span> <span class="o">=</span> <span class="s2">&quot;K&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">gain</span> <span class="o">=</span> <span class="mf">0.01</span><span class="n">f</span><span class="p">;</span> <span class="o">//</span> <span class="nb">float</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">offset</span> <span class="o">=</span> <span class="mf">273.15</span><span class="n">f</span><span class="p">;</span> <span class="o">//</span> <span class="nb">float</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">missingdata</span> <span class="o">=</span> <span class="o">-</span><span class="mi">32001</span><span class="p">;</span> <span class="o">//</span> <span class="nb">int</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">nodata</span> <span class="o">=</span> <span class="o">-</span><span class="mi">32001</span><span class="p">;</span> <span class="o">//</span> <span class="nb">int</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">starttime</span> <span class="o">=</span> <span class="s2">&quot;180011&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">endtime</span> <span class="o">=</span> <span class="s2">&quot;195510&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">startdate</span> <span class="o">=</span> <span class="s2">&quot;20061006&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">enddate</span> <span class="o">=</span> <span class="s2">&quot;20061006&quot;</span><span class="p">;</span>
+   <span class="p">}</span>
+
+   <span class="n">image4</span><span class="p">:</span><span class="n">channel</span> <span class="o">=</span> <span class="s2">&quot;4&quot;</span><span class="p">;</span>
+   <span class="n">image4</span><span class="p">:</span><span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;AVHRR ch4&quot;</span><span class="p">;</span>
+ <span class="p">}</span>
+
+ <span class="n">Group</span> <span class="n">image5</span> <span class="p">{</span>
+   <span class="n">variables</span><span class="p">:</span>
+     <span class="n">short</span> <span class="n">data</span><span class="p">(</span><span class="mi">13686</span><span class="p">,</span> <span class="mi">409</span><span class="p">);</span>
+       <span class="p">:</span><span class="n">_lastModified</span> <span class="o">=</span> <span class="s2">&quot;2014-10-29T13:55:05Z&quot;</span><span class="p">;</span>
+
+   <span class="n">Group</span> <span class="n">how</span> <span class="p">{</span>
+   <span class="p">}</span>
+
+   <span class="n">Group</span> <span class="n">what</span> <span class="p">{</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">product</span> <span class="o">=</span> <span class="s2">&quot;SATCH&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">quantity</span> <span class="o">=</span> <span class="s2">&quot;TB&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">dataset_name</span> <span class="o">=</span> <span class="s2">&quot;Channel 5 brightness temperature&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">units</span> <span class="o">=</span> <span class="s2">&quot;K&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">gain</span> <span class="o">=</span> <span class="mf">0.01</span><span class="n">f</span><span class="p">;</span> <span class="o">//</span> <span class="nb">float</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">offset</span> <span class="o">=</span> <span class="mf">273.15</span><span class="n">f</span><span class="p">;</span> <span class="o">//</span> <span class="nb">float</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">missingdata</span> <span class="o">=</span> <span class="o">-</span><span class="mi">32001</span><span class="p">;</span> <span class="o">//</span> <span class="nb">int</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">nodata</span> <span class="o">=</span> <span class="o">-</span><span class="mi">32001</span><span class="p">;</span> <span class="o">//</span> <span class="nb">int</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">starttime</span> <span class="o">=</span> <span class="s2">&quot;180011&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">endtime</span> <span class="o">=</span> <span class="s2">&quot;195510&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">startdate</span> <span class="o">=</span> <span class="s2">&quot;20061006&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">enddate</span> <span class="o">=</span> <span class="s2">&quot;20061006&quot;</span><span class="p">;</span>
+   <span class="p">}</span>
+
+   <span class="n">image5</span><span class="p">:</span><span class="n">channel</span> <span class="o">=</span> <span class="s2">&quot;5&quot;</span><span class="p">;</span>
+   <span class="n">image5</span><span class="p">:</span><span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;AVHRR ch5&quot;</span><span class="p">;</span>
+ <span class="p">}</span>
+
+ <span class="n">Group</span> <span class="n">image6</span> <span class="p">{</span>
+   <span class="n">variables</span><span class="p">:</span>
+     <span class="n">short</span> <span class="n">data</span><span class="p">(</span><span class="mi">13686</span><span class="p">,</span> <span class="mi">409</span><span class="p">);</span>
+       <span class="p">:</span><span class="n">_lastModified</span> <span class="o">=</span> <span class="s2">&quot;2014-10-29T13:55:05Z&quot;</span><span class="p">;</span>
+
+   <span class="n">Group</span> <span class="n">how</span> <span class="p">{</span>
+     <span class="n">how</span><span class="p">:</span><span class="n">sun_earth_distance_correction_applied</span> <span class="o">=</span> <span class="s2">&quot;TRUE&quot;</span><span class="p">;</span>
+     <span class="n">how</span><span class="p">:</span><span class="n">sun_earth_distance_correction_factor</span> <span class="o">=</span> <span class="mf">0.9982412208987179</span><span class="p">;</span> <span class="o">//</span> <span class="n">double</span>
+   <span class="p">}</span>
+
+   <span class="n">Group</span> <span class="n">what</span> <span class="p">{</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">product</span> <span class="o">=</span> <span class="s2">&quot;SATCH&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">quantity</span> <span class="o">=</span> <span class="s2">&quot;REFL&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">dataset_name</span> <span class="o">=</span> <span class="s2">&quot;Channel 3a reflectance&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">units</span> <span class="o">=</span> <span class="s2">&quot;%&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">gain</span> <span class="o">=</span> <span class="mf">0.01</span><span class="n">f</span><span class="p">;</span> <span class="o">//</span> <span class="nb">float</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">offset</span> <span class="o">=</span> <span class="mf">0.0</span><span class="n">f</span><span class="p">;</span> <span class="o">//</span> <span class="nb">float</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">missingdata</span> <span class="o">=</span> <span class="o">-</span><span class="mi">32001</span><span class="p">;</span> <span class="o">//</span> <span class="nb">int</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">nodata</span> <span class="o">=</span> <span class="o">-</span><span class="mi">32001</span><span class="p">;</span> <span class="o">//</span> <span class="nb">int</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">starttime</span> <span class="o">=</span> <span class="s2">&quot;180011&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">endtime</span> <span class="o">=</span> <span class="s2">&quot;195510&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">startdate</span> <span class="o">=</span> <span class="s2">&quot;20061006&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">enddate</span> <span class="o">=</span> <span class="s2">&quot;20061006&quot;</span><span class="p">;</span>
+   <span class="p">}</span>
+
+   <span class="n">image6</span><span class="p">:</span><span class="n">channel</span> <span class="o">=</span> <span class="s2">&quot;3a&quot;</span><span class="p">;</span>
+   <span class="n">image6</span><span class="p">:</span><span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;AVHRR ch3a&quot;</span><span class="p">;</span>
+ <span class="p">}</span>
+
+ <span class="n">Group</span> <span class="n">what</span> <span class="p">{</span>
+   <span class="n">what</span><span class="p">:</span><span class="nb">object</span> <span class="o">=</span> <span class="s2">&quot;SATP&quot;</span><span class="p">;</span>
+   <span class="n">what</span><span class="p">:</span><span class="n">sets</span> <span class="o">=</span> <span class="mi">6</span><span class="p">;</span> <span class="o">//</span> <span class="nb">int</span>
+   <span class="n">what</span><span class="p">:</span><span class="n">version</span> <span class="o">=</span> <span class="s2">&quot;H5rad ?.?&quot;</span><span class="p">;</span>
+   <span class="n">what</span><span class="p">:</span><span class="n">date</span> <span class="o">=</span> <span class="s2">&quot;20061006&quot;</span><span class="p">;</span>
+   <span class="n">what</span><span class="p">:</span><span class="n">time</span> <span class="o">=</span> <span class="s2">&quot;180011&quot;</span><span class="p">;</span>
+ <span class="p">}</span>
+
+ <span class="n">Group</span> <span class="n">where</span> <span class="p">{</span>
+
+   <span class="n">Group</span> <span class="n">lat</span> <span class="p">{</span>
+     <span class="n">variables</span><span class="p">:</span>
+       <span class="nb">int</span> <span class="n">data</span><span class="p">(</span><span class="mi">13686</span><span class="p">,</span> <span class="mi">409</span><span class="p">);</span>
+         <span class="p">:</span><span class="n">_lastModified</span> <span class="o">=</span> <span class="s2">&quot;2014-10-29T13:55:05Z&quot;</span><span class="p">;</span>
+
+     <span class="n">Group</span> <span class="n">what</span> <span class="p">{</span>
+       <span class="n">what</span><span class="p">:</span><span class="n">dataset_name</span> <span class="o">=</span> <span class="s2">&quot;Latitude&quot;</span><span class="p">;</span>
+       <span class="n">what</span><span class="p">:</span><span class="n">units</span> <span class="o">=</span> <span class="s2">&quot;Deg&quot;</span><span class="p">;</span>
+       <span class="n">what</span><span class="p">:</span><span class="n">gain</span> <span class="o">=</span> <span class="mf">0.001</span><span class="n">f</span><span class="p">;</span> <span class="o">//</span> <span class="nb">float</span>
+       <span class="n">what</span><span class="p">:</span><span class="n">offset</span> <span class="o">=</span> <span class="mf">0.0</span><span class="n">f</span><span class="p">;</span> <span class="o">//</span> <span class="nb">float</span>
+       <span class="n">what</span><span class="p">:</span><span class="n">missingdata</span> <span class="o">=</span> <span class="o">-</span><span class="mi">32001</span><span class="p">;</span> <span class="o">//</span> <span class="nb">int</span>
+       <span class="n">what</span><span class="p">:</span><span class="n">nodata</span> <span class="o">=</span> <span class="o">-</span><span class="mi">32001</span><span class="p">;</span> <span class="o">//</span> <span class="nb">int</span>
+       <span class="n">what</span><span class="p">:</span><span class="n">starttime</span> <span class="o">=</span> <span class="s2">&quot;180011&quot;</span><span class="p">;</span>
+       <span class="n">what</span><span class="p">:</span><span class="n">endtime</span> <span class="o">=</span> <span class="s2">&quot;195510&quot;</span><span class="p">;</span>
+       <span class="n">what</span><span class="p">:</span><span class="n">startdate</span> <span class="o">=</span> <span class="s2">&quot;20061006&quot;</span><span class="p">;</span>
+       <span class="n">what</span><span class="p">:</span><span class="n">enddate</span> <span class="o">=</span> <span class="s2">&quot;20061006&quot;</span><span class="p">;</span>
+     <span class="p">}</span>
+   <span class="p">}</span>
+
+   <span class="n">Group</span> <span class="n">lon</span> <span class="p">{</span>
+     <span class="n">variables</span><span class="p">:</span>
+       <span class="nb">int</span> <span class="n">data</span><span class="p">(</span><span class="mi">13686</span><span class="p">,</span> <span class="mi">409</span><span class="p">);</span>
+         <span class="p">:</span><span class="n">_lastModified</span> <span class="o">=</span> <span class="s2">&quot;2014-10-29T13:55:05Z&quot;</span><span class="p">;</span>
+
+     <span class="n">Group</span> <span class="n">what</span> <span class="p">{</span>
+       <span class="n">what</span><span class="p">:</span><span class="n">dataset_name</span> <span class="o">=</span> <span class="s2">&quot;Longitude&quot;</span><span class="p">;</span>
+       <span class="n">what</span><span class="p">:</span><span class="n">units</span> <span class="o">=</span> <span class="s2">&quot;Deg&quot;</span><span class="p">;</span>
+       <span class="n">what</span><span class="p">:</span><span class="n">gain</span> <span class="o">=</span> <span class="mf">0.001</span><span class="n">f</span><span class="p">;</span> <span class="o">//</span> <span class="nb">float</span>
+       <span class="n">what</span><span class="p">:</span><span class="n">offset</span> <span class="o">=</span> <span class="mf">0.0</span><span class="n">f</span><span class="p">;</span> <span class="o">//</span> <span class="nb">float</span>
+       <span class="n">what</span><span class="p">:</span><span class="n">missingdata</span> <span class="o">=</span> <span class="o">-</span><span class="mi">32001</span><span class="p">;</span> <span class="o">//</span> <span class="nb">int</span>
+       <span class="n">what</span><span class="p">:</span><span class="n">nodata</span> <span class="o">=</span> <span class="o">-</span><span class="mi">32001</span><span class="p">;</span> <span class="o">//</span> <span class="nb">int</span>
+       <span class="n">what</span><span class="p">:</span><span class="n">starttime</span> <span class="o">=</span> <span class="s2">&quot;180011&quot;</span><span class="p">;</span>
+       <span class="n">what</span><span class="p">:</span><span class="n">endtime</span> <span class="o">=</span> <span class="s2">&quot;195510&quot;</span><span class="p">;</span>
+       <span class="n">what</span><span class="p">:</span><span class="n">startdate</span> <span class="o">=</span> <span class="s2">&quot;20061006&quot;</span><span class="p">;</span>
+       <span class="n">what</span><span class="p">:</span><span class="n">enddate</span> <span class="o">=</span> <span class="s2">&quot;20061006&quot;</span><span class="p">;</span>
+     <span class="p">}</span>
+   <span class="p">}</span>
+
+   <span class="n">where</span><span class="p">:</span><span class="n">num_of_pixels</span> <span class="o">=</span> <span class="mi">409</span><span class="p">;</span> <span class="o">//</span> <span class="nb">int</span>
+   <span class="n">where</span><span class="p">:</span><span class="n">num_of_lines</span> <span class="o">=</span> <span class="mi">13686</span><span class="p">;</span> <span class="o">//</span> <span class="nb">int</span>
+   <span class="n">where</span><span class="p">:</span><span class="n">xscale</span> <span class="o">=</span> <span class="mf">0.0</span><span class="n">f</span><span class="p">;</span> <span class="o">//</span> <span class="nb">float</span>
+   <span class="n">where</span><span class="p">:</span><span class="n">yscale</span> <span class="o">=</span> <span class="mf">0.0</span><span class="n">f</span><span class="p">;</span> <span class="o">//</span> <span class="nb">float</span>
+ <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="supplement-b-structure-of-an-output-file-containing-sun-and-satellite-positions">
+<h2>Supplement B: Structure of an output file containing Sun and satellite positions<a class="headerlink" href="#supplement-b-structure-of-an-output-file-containing-sun-and-satellite-positions" title="Permalink to this headline">¶</a></h2>
+<p>Input: L1b file: <code class="docutils literal notranslate"><span class="pre">NSS.GHRR.NN.D06279.S1800.E1955.B0711012.GC</span></code></p>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Group</span> <span class="n">how</span> <span class="p">{</span>
+   <span class="n">how</span><span class="p">:</span><span class="n">yaw_error</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">;</span> <span class="o">//</span> <span class="n">double</span>
+   <span class="n">how</span><span class="p">:</span><span class="n">roll_error</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">;</span> <span class="o">//</span> <span class="n">double</span>
+   <span class="n">how</span><span class="p">:</span><span class="n">pich_error</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">;</span> <span class="o">//</span> <span class="n">double</span>
+   <span class="n">how</span><span class="p">:</span><span class="n">startepochs</span> <span class="o">=</span> <span class="mi">1160157611</span><span class="n">L</span><span class="p">;</span> <span class="o">//</span> <span class="n">long</span>
+   <span class="n">how</span><span class="p">:</span><span class="n">endepochs</span> <span class="o">=</span> <span class="mi">1160164510</span><span class="n">L</span><span class="p">;</span> <span class="o">//</span> <span class="n">long</span>
+   <span class="n">how</span><span class="p">:</span><span class="n">platform</span> <span class="o">=</span> <span class="s2">&quot;noaa18&quot;</span><span class="p">;</span>
+   <span class="n">how</span><span class="p">:</span><span class="n">instrument</span> <span class="o">=</span> <span class="s2">&quot;avhrr&quot;</span><span class="p">;</span>
+   <span class="n">how</span><span class="p">:</span><span class="n">orbit_number</span> <span class="o">=</span> <span class="mi">99999</span><span class="p">;</span> <span class="o">//</span> <span class="nb">int</span>
+   <span class="n">how</span><span class="p">:</span><span class="n">software</span> <span class="o">=</span> <span class="s2">&quot;pyGAC&quot;</span><span class="p">;</span>
+   <span class="n">how</span><span class="p">:</span><span class="n">version</span> <span class="o">=</span> <span class="s2">&quot;1.0&quot;</span><span class="p">;</span>
+ <span class="p">}</span>
+
+ <span class="n">Group</span> <span class="n">image1</span> <span class="p">{</span>
+   <span class="n">variables</span><span class="p">:</span>
+     <span class="n">short</span> <span class="n">data</span><span class="p">(</span><span class="mi">13686</span><span class="p">,</span> <span class="mi">409</span><span class="p">);</span>
+       <span class="p">:</span><span class="n">_lastModified</span> <span class="o">=</span> <span class="s2">&quot;2014-10-29T13:55:06Z&quot;</span><span class="p">;</span>
+
+   <span class="n">Group</span> <span class="n">what</span> <span class="p">{</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">product</span> <span class="o">=</span> <span class="s2">&quot;SUNZ&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">quantity</span> <span class="o">=</span> <span class="s2">&quot;DEG&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">dataset_name</span> <span class="o">=</span> <span class="s2">&quot;Solar zenith angle&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">units</span> <span class="o">=</span> <span class="s2">&quot;Deg&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">gain</span> <span class="o">=</span> <span class="mf">0.01</span><span class="n">f</span><span class="p">;</span> <span class="o">//</span> <span class="nb">float</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">offset</span> <span class="o">=</span> <span class="mf">0.0</span><span class="n">f</span><span class="p">;</span> <span class="o">//</span> <span class="nb">float</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">missingdata</span> <span class="o">=</span> <span class="o">-</span><span class="mi">32001</span><span class="p">;</span> <span class="o">//</span> <span class="nb">int</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">nodata</span> <span class="o">=</span> <span class="o">-</span><span class="mi">32001</span><span class="p">;</span> <span class="o">//</span> <span class="nb">int</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">starttime</span> <span class="o">=</span> <span class="s2">&quot;180011&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">endtime</span> <span class="o">=</span> <span class="s2">&quot;195510&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">startdate</span> <span class="o">=</span> <span class="s2">&quot;20061006&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">enddate</span> <span class="o">=</span> <span class="s2">&quot;20061006&quot;</span><span class="p">;</span>
+   <span class="p">}</span>
+
+   <span class="n">image1</span><span class="p">:</span><span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Solar zenith angle&quot;</span><span class="p">;</span>
+ <span class="p">}</span>
+
+ <span class="n">Group</span> <span class="n">image2</span> <span class="p">{</span>
+   <span class="n">variables</span><span class="p">:</span>
+     <span class="n">short</span> <span class="n">data</span><span class="p">(</span><span class="mi">13686</span><span class="p">,</span> <span class="mi">409</span><span class="p">);</span>
+       <span class="p">:</span><span class="n">_lastModified</span> <span class="o">=</span> <span class="s2">&quot;2014-10-29T13:55:06Z&quot;</span><span class="p">;</span>
+
+   <span class="n">Group</span> <span class="n">what</span> <span class="p">{</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">product</span> <span class="o">=</span> <span class="s2">&quot;SATZ&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">quantity</span> <span class="o">=</span> <span class="s2">&quot;DEG&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">dataset_name</span> <span class="o">=</span> <span class="s2">&quot;Satellite zenith angle&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">units</span> <span class="o">=</span> <span class="s2">&quot;Deg&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">gain</span> <span class="o">=</span> <span class="mf">0.01</span><span class="n">f</span><span class="p">;</span> <span class="o">//</span> <span class="nb">float</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">offset</span> <span class="o">=</span> <span class="mf">0.0</span><span class="n">f</span><span class="p">;</span> <span class="o">//</span> <span class="nb">float</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">missingdata</span> <span class="o">=</span> <span class="o">-</span><span class="mi">32001</span><span class="p">;</span> <span class="o">//</span> <span class="nb">int</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">nodata</span> <span class="o">=</span> <span class="o">-</span><span class="mi">32001</span><span class="p">;</span> <span class="o">//</span> <span class="nb">int</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">starttime</span> <span class="o">=</span> <span class="s2">&quot;180011&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">endtime</span> <span class="o">=</span> <span class="s2">&quot;195510&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">startdate</span> <span class="o">=</span> <span class="s2">&quot;20061006&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">enddate</span> <span class="o">=</span> <span class="s2">&quot;20061006&quot;</span><span class="p">;</span>
+   <span class="p">}</span>
+
+   <span class="n">image2</span><span class="p">:</span><span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Satellite zenith angle&quot;</span><span class="p">;</span>
+ <span class="p">}</span>
+
+ <span class="n">Group</span> <span class="n">image3</span> <span class="p">{</span>
+   <span class="n">variables</span><span class="p">:</span>
+     <span class="n">short</span> <span class="n">data</span><span class="p">(</span><span class="mi">13686</span><span class="p">,</span> <span class="mi">409</span><span class="p">);</span>
+       <span class="p">:</span><span class="n">_lastModified</span> <span class="o">=</span> <span class="s2">&quot;2014-10-29T13:55:06Z&quot;</span><span class="p">;</span>
+
+   <span class="n">Group</span> <span class="n">what</span> <span class="p">{</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">product</span> <span class="o">=</span> <span class="s2">&quot;SSAZD&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">quantity</span> <span class="o">=</span> <span class="s2">&quot;DEG&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">dataset_name</span> <span class="o">=</span> <span class="s2">&quot;Relative satellite-sun azimuth angle&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">units</span> <span class="o">=</span> <span class="s2">&quot;Deg&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">gain</span> <span class="o">=</span> <span class="mf">0.01</span><span class="n">f</span><span class="p">;</span> <span class="o">//</span> <span class="nb">float</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">offset</span> <span class="o">=</span> <span class="mf">0.0</span><span class="n">f</span><span class="p">;</span> <span class="o">//</span> <span class="nb">float</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">missingdata</span> <span class="o">=</span> <span class="o">-</span><span class="mi">32001</span><span class="p">;</span> <span class="o">//</span> <span class="nb">int</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">nodata</span> <span class="o">=</span> <span class="o">-</span><span class="mi">32001</span><span class="p">;</span> <span class="o">//</span> <span class="nb">int</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">starttime</span> <span class="o">=</span> <span class="s2">&quot;180011&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">endtime</span> <span class="o">=</span> <span class="s2">&quot;195510&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">startdate</span> <span class="o">=</span> <span class="s2">&quot;20061006&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">enddate</span> <span class="o">=</span> <span class="s2">&quot;20061006&quot;</span><span class="p">;</span>
+   <span class="p">}</span>
+
+   <span class="n">image3</span><span class="p">:</span><span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Relative satellite-sun azimuth angle&quot;</span><span class="p">;</span>
+ <span class="p">}</span>
+
+ <span class="n">Group</span> <span class="n">image4</span> <span class="p">{</span>
+   <span class="n">variables</span><span class="p">:</span>
+     <span class="n">short</span> <span class="n">data</span><span class="p">(</span><span class="mi">13686</span><span class="p">,</span> <span class="mi">409</span><span class="p">);</span>
+       <span class="p">:</span><span class="n">_lastModified</span> <span class="o">=</span> <span class="s2">&quot;2014-10-29T13:55:06Z&quot;</span><span class="p">;</span>
+
+   <span class="n">Group</span> <span class="n">what</span> <span class="p">{</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">product</span> <span class="o">=</span> <span class="s2">&quot;SUNA&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">quantity</span> <span class="o">=</span> <span class="s2">&quot;DEG&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">dataset_name</span> <span class="o">=</span> <span class="s2">&quot;Solar azimuth angle&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">units</span> <span class="o">=</span> <span class="s2">&quot;Deg&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">gain</span> <span class="o">=</span> <span class="mf">0.01</span><span class="n">f</span><span class="p">;</span> <span class="o">//</span> <span class="nb">float</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">offset</span> <span class="o">=</span> <span class="mf">180.0</span><span class="n">f</span><span class="p">;</span> <span class="o">//</span> <span class="nb">float</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">missingdata</span> <span class="o">=</span> <span class="o">-</span><span class="mi">32001</span><span class="p">;</span> <span class="o">//</span> <span class="nb">int</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">nodata</span> <span class="o">=</span> <span class="o">-</span><span class="mi">32001</span><span class="p">;</span> <span class="o">//</span> <span class="nb">int</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">starttime</span> <span class="o">=</span> <span class="s2">&quot;180011&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">endtime</span> <span class="o">=</span> <span class="s2">&quot;195510&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">startdate</span> <span class="o">=</span> <span class="s2">&quot;20061006&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">enddate</span> <span class="o">=</span> <span class="s2">&quot;20061006&quot;</span><span class="p">;</span>
+   <span class="p">}</span>
+
+   <span class="n">image4</span><span class="p">:</span><span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Solar azimuth angle&quot;</span><span class="p">;</span>
+ <span class="p">}</span>
+
+ <span class="n">Group</span> <span class="n">image5</span> <span class="p">{</span>
+   <span class="n">variables</span><span class="p">:</span>
+     <span class="n">short</span> <span class="n">data</span><span class="p">(</span><span class="mi">13686</span><span class="p">,</span> <span class="mi">409</span><span class="p">);</span>
+       <span class="p">:</span><span class="n">_lastModified</span> <span class="o">=</span> <span class="s2">&quot;2014-10-29T13:55:06Z&quot;</span><span class="p">;</span>
+
+   <span class="n">Group</span> <span class="n">what</span> <span class="p">{</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">product</span> <span class="o">=</span> <span class="s2">&quot;SATA&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">quantity</span> <span class="o">=</span> <span class="s2">&quot;DEG&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">dataset_name</span> <span class="o">=</span> <span class="s2">&quot;Satellite azimuth angle&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">units</span> <span class="o">=</span> <span class="s2">&quot;Deg&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">gain</span> <span class="o">=</span> <span class="mf">0.01</span><span class="n">f</span><span class="p">;</span> <span class="o">//</span> <span class="nb">float</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">offset</span> <span class="o">=</span> <span class="mf">180.0</span><span class="n">f</span><span class="p">;</span> <span class="o">//</span> <span class="nb">float</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">missingdata</span> <span class="o">=</span> <span class="o">-</span><span class="mi">32001</span><span class="p">;</span> <span class="o">//</span> <span class="nb">int</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">nodata</span> <span class="o">=</span> <span class="o">-</span><span class="mi">32001</span><span class="p">;</span> <span class="o">//</span> <span class="nb">int</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">starttime</span> <span class="o">=</span> <span class="s2">&quot;180011&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">endtime</span> <span class="o">=</span> <span class="s2">&quot;195510&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">startdate</span> <span class="o">=</span> <span class="s2">&quot;20061006&quot;</span><span class="p">;</span>
+     <span class="n">what</span><span class="p">:</span><span class="n">enddate</span> <span class="o">=</span> <span class="s2">&quot;20061006&quot;</span><span class="p">;</span>
+   <span class="p">}</span>
+
+   <span class="n">image5</span><span class="p">:</span><span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Satellite azimuth angle&quot;</span><span class="p">;</span>
+ <span class="p">}</span>
+
+ <span class="n">Group</span> <span class="n">what</span> <span class="p">{</span>
+   <span class="n">what</span><span class="p">:</span><span class="nb">object</span> <span class="o">=</span> <span class="s2">&quot;SATP&quot;</span><span class="p">;</span>
+   <span class="n">what</span><span class="p">:</span><span class="n">sets</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span> <span class="o">//</span> <span class="nb">int</span>
+   <span class="n">what</span><span class="p">:</span><span class="n">version</span> <span class="o">=</span> <span class="s2">&quot;H5rad ?.?&quot;</span><span class="p">;</span>
+   <span class="n">what</span><span class="p">:</span><span class="n">date</span> <span class="o">=</span> <span class="s2">&quot;20061006&quot;</span><span class="p">;</span>
+   <span class="n">what</span><span class="p">:</span><span class="n">time</span> <span class="o">=</span> <span class="s2">&quot;180011&quot;</span><span class="p">;</span>
+ <span class="p">}</span>
+
+ <span class="n">Group</span> <span class="n">where</span> <span class="p">{</span>
+
+   <span class="n">Group</span> <span class="n">lat</span> <span class="p">{</span>
+     <span class="n">variables</span><span class="p">:</span>
+       <span class="nb">int</span> <span class="n">data</span><span class="p">(</span><span class="mi">13686</span><span class="p">,</span> <span class="mi">409</span><span class="p">);</span>
+         <span class="p">:</span><span class="n">_lastModified</span> <span class="o">=</span> <span class="s2">&quot;2014-10-29T13:55:06Z&quot;</span><span class="p">;</span>
+
+     <span class="n">Group</span> <span class="n">what</span> <span class="p">{</span>
+       <span class="n">what</span><span class="p">:</span><span class="n">dataset_name</span> <span class="o">=</span> <span class="s2">&quot;Latitude&quot;</span><span class="p">;</span>
+       <span class="n">what</span><span class="p">:</span><span class="n">units</span> <span class="o">=</span> <span class="s2">&quot;Deg&quot;</span><span class="p">;</span>
+       <span class="n">what</span><span class="p">:</span><span class="n">gain</span> <span class="o">=</span> <span class="mf">0.001</span><span class="n">f</span><span class="p">;</span> <span class="o">//</span> <span class="nb">float</span>
+       <span class="n">what</span><span class="p">:</span><span class="n">offset</span> <span class="o">=</span> <span class="mf">0.0</span><span class="n">f</span><span class="p">;</span> <span class="o">//</span> <span class="nb">float</span>
+       <span class="n">what</span><span class="p">:</span><span class="n">missingdata</span> <span class="o">=</span> <span class="o">-</span><span class="mi">32001</span><span class="p">;</span> <span class="o">//</span> <span class="nb">int</span>
+       <span class="n">what</span><span class="p">:</span><span class="n">nodata</span> <span class="o">=</span> <span class="o">-</span><span class="mi">32001</span><span class="p">;</span> <span class="o">//</span> <span class="nb">int</span>
+       <span class="n">what</span><span class="p">:</span><span class="n">starttime</span> <span class="o">=</span> <span class="s2">&quot;180011&quot;</span><span class="p">;</span>
+       <span class="n">what</span><span class="p">:</span><span class="n">endtime</span> <span class="o">=</span> <span class="s2">&quot;195510&quot;</span><span class="p">;</span>
+       <span class="n">what</span><span class="p">:</span><span class="n">startdate</span> <span class="o">=</span> <span class="s2">&quot;20061006&quot;</span><span class="p">;</span>
+       <span class="n">what</span><span class="p">:</span><span class="n">enddate</span> <span class="o">=</span> <span class="s2">&quot;20061006&quot;</span><span class="p">;</span>
+     <span class="p">}</span>
+   <span class="p">}</span>
+
+   <span class="n">Group</span> <span class="n">lon</span> <span class="p">{</span>
+     <span class="n">variables</span><span class="p">:</span>
+       <span class="nb">int</span> <span class="n">data</span><span class="p">(</span><span class="mi">13686</span><span class="p">,</span> <span class="mi">409</span><span class="p">);</span>
+         <span class="p">:</span><span class="n">_lastModified</span> <span class="o">=</span> <span class="s2">&quot;2014-10-29T13:55:06Z&quot;</span><span class="p">;</span>
+
+     <span class="n">Group</span> <span class="n">what</span> <span class="p">{</span>
+       <span class="n">what</span><span class="p">:</span><span class="n">dataset_name</span> <span class="o">=</span> <span class="s2">&quot;Longitude&quot;</span><span class="p">;</span>
+       <span class="n">what</span><span class="p">:</span><span class="n">units</span> <span class="o">=</span> <span class="s2">&quot;Deg&quot;</span><span class="p">;</span>
+       <span class="n">what</span><span class="p">:</span><span class="n">gain</span> <span class="o">=</span> <span class="mf">0.001</span><span class="n">f</span><span class="p">;</span> <span class="o">//</span> <span class="nb">float</span>
+       <span class="n">what</span><span class="p">:</span><span class="n">offset</span> <span class="o">=</span> <span class="mf">0.0</span><span class="n">f</span><span class="p">;</span> <span class="o">//</span> <span class="nb">float</span>
+       <span class="n">what</span><span class="p">:</span><span class="n">missingdata</span> <span class="o">=</span> <span class="o">-</span><span class="mi">32001</span><span class="p">;</span> <span class="o">//</span> <span class="nb">int</span>
+       <span class="n">what</span><span class="p">:</span><span class="n">nodata</span> <span class="o">=</span> <span class="o">-</span><span class="mi">32001</span><span class="p">;</span> <span class="o">//</span> <span class="nb">int</span>
+       <span class="n">what</span><span class="p">:</span><span class="n">starttime</span> <span class="o">=</span> <span class="s2">&quot;180011&quot;</span><span class="p">;</span>
+       <span class="n">what</span><span class="p">:</span><span class="n">endtime</span> <span class="o">=</span> <span class="s2">&quot;195510&quot;</span><span class="p">;</span>
+       <span class="n">what</span><span class="p">:</span><span class="n">startdate</span> <span class="o">=</span> <span class="s2">&quot;20061006&quot;</span><span class="p">;</span>
+       <span class="n">what</span><span class="p">:</span><span class="n">enddate</span> <span class="o">=</span> <span class="s2">&quot;20061006&quot;</span><span class="p">;</span>
+     <span class="p">}</span>
+   <span class="p">}</span>
+
+   <span class="n">where</span><span class="p">:</span><span class="n">num_of_pixels</span> <span class="o">=</span> <span class="mi">409</span><span class="p">;</span> <span class="o">//</span> <span class="nb">int</span>
+   <span class="n">where</span><span class="p">:</span><span class="n">num_of_lines</span> <span class="o">=</span> <span class="mi">13686</span><span class="p">;</span> <span class="o">//</span> <span class="nb">int</span>
+   <span class="n">where</span><span class="p">:</span><span class="n">xscale</span> <span class="o">=</span> <span class="mf">0.0</span><span class="n">f</span><span class="p">;</span> <span class="o">//</span> <span class="nb">float</span>
+   <span class="n">where</span><span class="p">:</span><span class="n">yscale</span> <span class="o">=</span> <span class="mf">0.0</span><span class="n">f</span><span class="p">;</span> <span class="o">//</span> <span class="nb">float</span>
+ <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="supplement-c-structure-of-an-output-file-containing-quality-flags">
+<h2>Supplement C: Structure of an output file containing quality flags<a class="headerlink" href="#supplement-c-structure-of-an-output-file-containing-quality-flags" title="Permalink to this headline">¶</a></h2>
+<p>The file that contains quality flags has following information.</p>
+<p>1) There is a variable called <code class="docutils literal notranslate"><span class="pre">qual_flags/data</span></code>. It will have a dimension of
+(X,7), where X is the number of data records in the GAC orbit. The 7 columns
+contain the following information.</p>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p>Col 1</p></td>
+<td><p>Scan line number</p></td>
+</tr>
+<tr class="row-even"><td><p>Col 2</p></td>
+<td><p>Fatal error flag (scan line should not be used for analysis).</p></td>
+</tr>
+<tr class="row-odd"><td><p>Col 3</p></td>
+<td><p>Insufficient data for calibration (scan line should not be used for analysis).</p></td>
+</tr>
+<tr class="row-even"><td><p>Col 4</p></td>
+<td><p>Insufficient data for navigation (scan line should not be used for analysis).</p></td>
+</tr>
+<tr class="row-odd"><td><p>Col 5-7</p></td>
+<td><p>whether solar contamination of blackbody occurred in in channels 3, 4, and 5 respectively.</p></td>
+</tr>
+</tbody>
+</table>
+<p>If the values for these flags are greater than zero, then the data should not
+be used. If everything is normal, then all values should be zero.</p>
+<p>2) There are also two important attributes that provide “last scan line number”
+and “total number of data records”.</p>
+<p>By combining information from column 1 and these two attributes, the user is
+able to figure out where the gap occurs and also exact time for each scan line.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Legacy Output</a><ul>
+<li><a class="reference internal" href="#gac-i-o-module">GAC I/O module</a></li>
+<li><a class="reference internal" href="#supplement-a-structure-of-an-output-file-containing-reflectances-and-brightness-temperatures">Supplement A: Structure of an output file containing reflectances and brightness temperatures</a></li>
+<li><a class="reference internal" href="#supplement-b-structure-of-an-output-file-containing-sun-and-satellite-positions">Supplement B: Structure of an output file containing Sun and satellite positions</a></li>
+<li><a class="reference internal" href="#supplement-c-structure-of-an-output-file-containing-quality-flags">Supplement C: Structure of an output file containing quality flags</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="api.html"
+                        title="previous chapter">The Pygac API</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/legacy.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="api.html" title="The Pygac API"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">pygac 0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Legacy Output</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2014, Abhay Devasthale, Martin Raspaud and Adam Dybbroe.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.1.
+    </div>
+  </body>
+</html>

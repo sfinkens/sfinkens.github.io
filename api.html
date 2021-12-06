@@ -1,0 +1,1209 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>The Pygac API &#8212; pygac 0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Legacy Output" href="legacy.html" />
+    <link rel="prev" title="Methods" href="methods.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="legacy.html" title="Legacy Output"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="methods.html" title="Methods"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">pygac 0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">The Pygac API</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="the-pygac-api">
+<h1>The Pygac API<a class="headerlink" href="#the-pygac-api" title="Permalink to this headline">¶</a></h1>
+<div class="graphviz"><img src="_images/inheritance-2e16652c98c0f26ba13000de394e55aa684f5db3.png" alt="Inheritance diagram of pygac.gac_pod.GACPODReader, pygac.gac_klm.GACKLMReader, pygac.lac_pod.LACPODReader, pygac.lac_klm.LACKLMReader" usemap="#inheritance7ab130d6b9" class="inheritance graphviz" /></div>
+<map id="inheritance7ab130d6b9" name="inheritance7ab130d6b9">
+<area shape="rect" id="node1" href="#pygac.gac_klm.GACKLMReader" target="_top" title="The GAC KLM reader class." alt="" coords="471,5,695,31"/>
+<area shape="rect" id="node2" href="#pygac.gac_reader.GACReader" target="_top" title="Reader for GAC data." alt="" coords="209,5,422,31"/>
+<area shape="rect" id="node4" href="#pygac.gac_pod.GACPODReader" target="_top" title="The GAC POD reader class." alt="" coords="471,55,695,80"/>
+<area shape="rect" id="node3" href="#pygac.klm_reader.KLMReader" target="_top" title="Reader for KLM data." alt="" coords="208,55,423,80"/>
+<area shape="rect" id="node7" href="#pygac.lac_klm.LACKLMReader" target="_top" title="The LAC KLM reader." alt="" coords="474,104,691,129"/>
+<area shape="rect" id="node5" href="#pygac.pod_reader.PODReader" target="_top" title="The POD reader." alt="" coords="208,104,423,129"/>
+<area shape="rect" id="node9" href="#pygac.lac_pod.LACPODReader" target="_top" title="The LAC POD reader." alt="" coords="474,153,691,179"/>
+<area shape="rect" id="node6" href="#pygac.reader.Reader" target="_top" title="Reader for GAC and LAC format, POD and KLM platforms." alt="" coords="5,80,160,105"/>
+<area shape="rect" id="node8" href="#pygac.lac_reader.LACReader" target="_top" title="Reader for LAC data." alt="" coords="212,153,419,179"/>
+</map><section id="base-classes">
+<h2>Base Classes<a class="headerlink" href="#base-classes" title="Permalink to this headline">¶</a></h2>
+<p>Common functionality shared by multiple readers.</p>
+<section id="module-pygac.reader">
+<span id="reader"></span><h3>Reader<a class="headerlink" href="#module-pygac.reader" title="Permalink to this headline">¶</a></h3>
+<p>Generic reader for GAC and LAC data.</p>
+<p>Can’t be used as is, has to be subclassed to add specific read functions.</p>
+<dl class="py exception">
+<dt class="sig sig-object py" id="pygac.reader.NoTLEData">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pygac.reader.</span></span><span class="sig-name descname"><span class="pre">NoTLEData</span></span><a class="headerlink" href="#pygac.reader.NoTLEData" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised if no TLE data available within time range.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pygac.reader.Reader">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pygac.reader.</span></span><span class="sig-name descname"><span class="pre">Reader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">interpolate_coords</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adjust_clock_drift</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tle_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tle_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tle_thresh</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">7</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">creation_site</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_calibration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calibration_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygac.reader.Reader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reader for GAC and LAC format, POD and KLM platforms.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="pygac.reader.Reader.QFlag">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">QFlag</span></span><a class="headerlink" href="#pygac.reader.Reader.QFlag" title="Permalink to this definition">¶</a></dt>
+<dd><p>KLM/POD specific quality indicators.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pygac.reader.Reader.calibration">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">calibration</span></span><a class="headerlink" href="#pygac.reader.Reader.calibration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the property ‘calibration’.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygac.reader.Reader.can_read">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">can_read</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fileobj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygac.reader.Reader.can_read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read the GAC/LAC data.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>filename (str): Path to GAC/LAC file
+fileobj: An open file object to read from. (optional)</p>
+</dd>
+<dt>Retruns:</dt><dd><p>result (bool): True if the reader can read the input</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygac.reader.Reader.correct_scan_line_numbers">
+<span class="sig-name descname"><span class="pre">correct_scan_line_numbers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pygac.reader.Reader.correct_scan_line_numbers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove scanlines with corrupted scanline numbers.</p>
+<dl class="simple">
+<dt>This includes:</dt><dd><ul class="simple">
+<li><p>Scanline numbers outside the valide range</p></li>
+<li><p>Scanline numbers deviating more than a certain threshold from the
+ideal case (1,2,3,…N)</p></li>
+</ul>
+</dd>
+<dt>Example files having corrupt scanline numbers:</dt><dd><ul class="simple">
+<li><p>NSS.GHRR.NJ.D96144.S2000.E2148.B0720102.GC</p></li>
+<li><p>NSS.GHRR.NJ.D96064.S0043.E0236.B0606162.WI</p></li>
+<li><p>NSS.GHRR.NJ.D99286.S1818.E2001.B2466869.WI</p></li>
+</ul>
+</dd>
+<dt>Returns:</dt><dd><p>Intermediate and final results (for plotting purpose)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygac.reader.Reader.correct_times_median">
+<span class="sig-name descname"><span class="pre">correct_times_median</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">year</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jday</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">msec</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygac.reader.Reader.correct_times_median" title="Permalink to this definition">¶</a></dt>
+<dd><p>Replace invalid timestamps with statistical estimates (using median).</p>
+<p>Assumes that the majority of timestamps is ok.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>year: Year
+jday: Day of the year
+msec: Milliseconds since 00:00</p>
+</dd>
+<dt>Returns:</dt><dd><p>Corrected year
+Corrected day of the year
+Corrected milliseconds</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygac.reader.Reader.correct_times_thresh">
+<span class="sig-name descname"><span class="pre">correct_times_thresh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_diff_from_t0_head</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">360000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_frac_near_t0_head</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_diff_from_ideal_t</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygac.reader.Reader.correct_times_thresh" title="Permalink to this definition">¶</a></dt>
+<dd><p>Correct corrupted timestamps using a threshold approach.</p>
+<p>The threshold approach is based on the scanline number and the header
+timestamp. It also works if the majority of scanlines has corrupted
+timestamps.</p>
+<p>The header timestamp is used as a guideline to estimate the offset
+between timestamps computed from the scanline number and the actual
+scanline timestamps in the data. If header timestamp and scanline
+timestamps do not match, no correction is applied.</p>
+<p>Once the offset has been estimated, one can calculate the ideal
+timestamps based on the scanline number. Timestamps deviating more than
+a certain threshold from the ideal timestamps are replaced by
+the ideal timestamps.</p>
+<dl>
+<dt>Example files having corrupt timestamps:</dt><dd><ul class="simple">
+<li><p>NSS.GHRR.NA.D81193.S2329.E0116.B1061214.WI</p></li>
+<li><p>NSS.GHRR.NL.D01035.S2342.E0135.B0192627.WI</p></li>
+</ul>
+</dd>
+<dt>Args:</dt><dd><dl>
+<dt>max_diff_from_t0_head (int): Threshold for offset estimation: A</dt><dd><p>scanline timestamp matches the header timestamp t0_head if it is
+within the interval</p>
+<blockquote>
+<div><p>[t0_head - max_diff_from_t0_head,
+t0_head + max_diff_from_t0_head]</p>
+</div></blockquote>
+<p>around the header timestamp.</p>
+</dd>
+<dt>min_frac_near_t0_head (float): Specifies the minimum fraction of</dt><dd><p>scanline timestamps matching the header timestamp required for
+applying the correction.</p>
+</dd>
+<dt>max_diff_from_ideal_t (float): Threshold for timestamp correction:</dt><dd><p>If a scanline timestamp deviates more than max_diff_from_ideal_t
+from the ideal timestamp, it is regarded as corrupt and will be
+replaced with the ideal timestamp.</p>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><p>Intermediate and final results (for plotting purpose)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygac.reader.Reader.data_set_pattern">
+<span class="sig-name descname"><span class="pre">data_set_pattern</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">re.compile('\\w{3}\\.\\w{4}\\.\\w{2}.D\\d{5}\\.S\\d{4}\\.E\\d{4}\\.B\\d{7}\\.\\w{2}')</span></em><a class="headerlink" href="#pygac.reader.Reader.data_set_pattern" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pygac.reader.Reader.filename">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">filename</span></span><a class="headerlink" href="#pygac.reader.Reader.filename" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the property ‘filename’.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygac.reader.Reader.fromfile">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fromfile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fileobj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygac.reader.Reader.fromfile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create Reader from file (alternative constructor)</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>filename (str): Path to GAC/LAC file</p>
+</dd>
+<dt>Kwargs:</dt><dd><p>fileobj (file object): Open file object to read from</p>
+</dd>
+<dt>Note:</dt><dd><p>The fileobj is useful when dealing with tar archives,
+where the filename is given by the tarinfo object, but
+the extracted file object’s property ‘name’ is set to
+the filename of the archive.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygac.reader.Reader.get_angles">
+<span class="sig-name descname"><span class="pre">get_angles</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pygac.reader.Reader.get_angles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get azimuth and zenith angles.</p>
+<p>Azimuth angle definition is the same as in pyorbital, but with
+different units (degrees not radians for sun azimuth angles)
+and different ranges.</p>
+<p>Returns:</p>
+<blockquote>
+<div><p>sat_azi: satellite azimuth angle degree clockwise from north in
+range ]-180, 180]</p>
+<p>sat_zentih: satellite zenith angles in degrees in range [0,90]</p>
+<p>sun_azi: sun azimuth angle degree clockwise from north in range
+]-180, 180]</p>
+<p>sun_zentih: sun zenith angles in degrees in range [0,90]</p>
+<p>rel_azi: absolute azimuth angle difference in degrees between sun
+and sensor in range [0, 180]</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygac.reader.Reader.get_attitude_coeffs">
+<span class="sig-name descname"><span class="pre">get_attitude_coeffs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pygac.reader.Reader.get_attitude_coeffs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the roll, pitch, yaw values</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygac.reader.Reader.get_calibrated_channels">
+<span class="sig-name descname"><span class="pre">get_calibrated_channels</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pygac.reader.Reader.get_calibrated_channels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calibrate and return the channels.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygac.reader.Reader.get_counts">
+<span class="sig-name descname"><span class="pre">get_counts</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pygac.reader.Reader.get_counts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the counts.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>np.array: The counts, with channel 3a and 3b split if necessary.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygac.reader.Reader.get_header_timestamp">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_header_timestamp</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pygac.reader.Reader.get_header_timestamp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read start timestamp from the header.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>datetime.datetime: Start timestamp</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygac.reader.Reader.get_lonlat">
+<span class="sig-name descname"><span class="pre">get_lonlat</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pygac.reader.Reader.get_lonlat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute lat/lon coordinates.</p>
+<p>TODO: Switch to faster interpolator?</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygac.reader.Reader.get_midnight_scanline">
+<span class="sig-name descname"><span class="pre">get_midnight_scanline</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pygac.reader.Reader.get_midnight_scanline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the scanline where the UTC date increases by one day.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>int: The midnight scanline if it exists and is unique.</dt><dd><p>None, else.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygac.reader.Reader.get_miss_lines">
+<span class="sig-name descname"><span class="pre">get_miss_lines</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pygac.reader.Reader.get_miss_lines" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find missing scanlines.</p>
+<p>I.e. scanlines which were dropped for some reason or were never recorded.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>Indices of missing scanlines</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygac.reader.Reader.get_qual_flags">
+<span class="sig-name descname"><span class="pre">get_qual_flags</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pygac.reader.Reader.get_qual_flags" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read quality flags.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygac.reader.Reader.get_sat_angles">
+<span class="sig-name descname"><span class="pre">get_sat_angles</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pygac.reader.Reader.get_sat_angles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get satellite angles.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>Azimuth, elevation (degrees)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygac.reader.Reader.get_sun_earth_distance_correction">
+<span class="sig-name descname"><span class="pre">get_sun_earth_distance_correction</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pygac.reader.Reader.get_sun_earth_distance_correction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the julian day and the sun-earth distance correction.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygac.reader.Reader.get_telemetry">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_telemetry</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pygac.reader.Reader.get_telemetry" title="Permalink to this definition">¶</a></dt>
+<dd><p>KLM/POD specific readout of telemetry.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygac.reader.Reader.get_times">
+<span class="sig-name descname"><span class="pre">get_times</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pygac.reader.Reader.get_times" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read scanline timestamps and try to correct invalid values.</p>
+<dl class="simple">
+<dt>Note:</dt><dd><p>Also sets self.utcs and self.times!</p>
+</dd>
+<dt>Returns:</dt><dd><p>UTC timestamps</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygac.reader.Reader.get_tle_file">
+<span class="sig-name descname"><span class="pre">get_tle_file</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pygac.reader.Reader.get_tle_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find TLE file for the current satellite.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygac.reader.Reader.get_tle_lines">
+<span class="sig-name descname"><span class="pre">get_tle_lines</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pygac.reader.Reader.get_tle_lines" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find closest two line elements (TLEs) for the current orbit.</p>
+<dl class="simple">
+<dt>Raises:</dt><dd><p>IndexError, if the closest TLE is more than <code class="xref py py-meth docutils literal notranslate"><span class="pre">pygac.GACReader.tle_thresh()</span></code> days apart</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygac.reader.Reader.get_tsm_pixels">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_tsm_pixels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channels</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygac.reader.Reader.get_tsm_pixels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determine pixels affected by the scan motor issue.</p>
+<p>Channel selection is POD/KLM specific.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygac.reader.Reader.is_tsm_affected">
+<span class="sig-name descname"><span class="pre">is_tsm_affected</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pygac.reader.Reader.is_tsm_affected" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determine whether this orbit is affected by the scan motor problem.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>bool: True if the orbit is affected, False otherwise.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygac.reader.Reader.lineno2msec">
+<span class="sig-name descname"><span class="pre">lineno2msec</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scan_line_number</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygac.reader.Reader.lineno2msec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute ideal scanline timestamp based on the scanline number.</p>
+<p>Assumes a constant scanning frequency.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>scan_line_number: Specifies the scanline number (1-based)</p>
+</dd>
+<dt>Returns:</dt><dd><p>Corresponding timestamps in milliseconds since 1970-01-01 00:00,
+i.e. the first scanline has timestamp 0.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pygac.reader.Reader.mask">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mask</span></span><a class="headerlink" href="#pygac.reader.Reader.mask" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mask for corrupt scanlines.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygac.reader.Reader.mask_tsm_pixels">
+<span class="sig-name descname"><span class="pre">mask_tsm_pixels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channels</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygac.reader.Reader.mask_tsm_pixels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mask pixels affected by the scan motor issue.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygac.reader.Reader.postproc">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">postproc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channels</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygac.reader.Reader.postproc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply KLM/POD specific postprocessing.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygac.reader.Reader.read">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fileobj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygac.reader.Reader.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read the GAC/LAC data.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>filename (str): Path to GAC/LAC file
+fileobj: An open file object to read from. (optional)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygac.reader.Reader.read_header">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read_header</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fileobj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygac.reader.Reader.read_header" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read the file header.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>filename (str): Path to GAC/LAC file
+fileobj: An open file object to read from. (optional)</p>
+</dd>
+<dt>Returns:</dt><dd><p>archive_header (struct): archive header
+header (struct): file header</p>
+</dd>
+<dt>Note:</dt><dd><p>This is a classmethod to avoid throwaway instances while
+checking if the reader corresponds to the input file.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygac.reader.Reader.read_tle_file">
+<span class="sig-name descname"><span class="pre">read_tle_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tle_filename</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygac.reader.Reader.read_tle_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read TLE file.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygac.reader.Reader.save">
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_file_prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'PyGAC'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'./'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">avhrr_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qual_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sunsatangles_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygac.reader.Reader.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert the Reader instance content into hdf5 files</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pygac.reader.Reader.times">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">times</span></span><a class="headerlink" href="#pygac.reader.Reader.times" title="Permalink to this definition">¶</a></dt>
+<dd><p>The UTCs as datetime.datetime</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygac.reader.Reader.tle2datetime64">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">tle2datetime64</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">times</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygac.reader.Reader.tle2datetime64" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert TLE timestamps to numpy.datetime64.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>times (float): TLE timestamps as %y%j.1234, e.g. 18001.25</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygac.reader.Reader.to_datetime">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">to_datetime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datetime64</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygac.reader.Reader.to_datetime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert numpy.datetime64 to datetime.datetime.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>datetime64 (numpy.datetime64): Numpy timestamp to be converted.</p>
+</dd>
+<dt>Returns:</dt><dd><p>datetime.datetime: Converted timestamp</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygac.reader.Reader.to_datetime64">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">to_datetime64</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">year</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jday</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">msec</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygac.reader.Reader.to_datetime64" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert timestamps to numpy.datetime64.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>year: Year
+jday: Day of the year (1-based)
+msec: Milliseconds since 00:00</p>
+</dd>
+<dt>Returns:</dt><dd><p>numpy.datetime64: Converted timestamps</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pygac.reader.Reader.tsm_affected_intervals">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">tsm_affected_intervals</span></span><a class="headerlink" href="#pygac.reader.Reader.tsm_affected_intervals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Specify time intervals being affected by the scan motor problem.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>dict: Affected time intervals. A dictionary containing a list of</dt><dd><p>(start, end) tuples for each affected platform. Both start and
+end must be datetime.datetime objects.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygac.reader.Reader.update_meta_data">
+<span class="sig-name descname"><span class="pre">update_meta_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pygac.reader.Reader.update_meta_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add some metd data to the meta_data dicitonary.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="pygac.reader.ReaderError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pygac.reader.</span></span><span class="sig-name descname"><span class="pre">ReaderError</span></span><a class="headerlink" href="#pygac.reader.ReaderError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised in Reader.read if the given file does not correspond to it</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pygac.reader.inherit_doc">
+<span class="sig-prename descclassname"><span class="pre">pygac.reader.</span></span><span class="sig-name descname"><span class="pre">inherit_doc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygac.reader.inherit_doc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make a class method inherit its docstring from the parent class.</p>
+<p>Copied from <a class="reference external" href="http://stackoverflow.com/a/8101598/5703449">http://stackoverflow.com/a/8101598/5703449</a> .</p>
+</dd></dl>
+
+</section>
+<section id="module-pygac.gac_reader">
+<span id="gac-format-reader"></span><h3>GAC format reader<a class="headerlink" href="#module-pygac.gac_reader" title="Permalink to this headline">¶</a></h3>
+<p>Generic reader for GAC data.</p>
+<p>Can’t be used as is, has to be subclassed to add specific read functions.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="pygac.gac_reader.GACReader">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pygac.gac_reader.</span></span><span class="sig-name descname"><span class="pre">GACReader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygac.gac_reader.GACReader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reader for GAC data.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygac.gac_reader.GACReader.scan_freq">
+<span class="sig-name descname"><span class="pre">scan_freq</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.002</span></em><a class="headerlink" href="#pygac.gac_reader.GACReader.scan_freq" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-pygac.lac_reader">
+<span id="lac-format-reader"></span><h3>LAC format reader<a class="headerlink" href="#module-pygac.lac_reader" title="Permalink to this headline">¶</a></h3>
+<p>The LAC reader.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="pygac.lac_reader.LACReader">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pygac.lac_reader.</span></span><span class="sig-name descname"><span class="pre">LACReader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygac.lac_reader.LACReader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reader for LAC data.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygac.lac_reader.LACReader.scan_freq">
+<span class="sig-name descname"><span class="pre">scan_freq</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.006</span></em><a class="headerlink" href="#pygac.lac_reader.LACReader.scan_freq" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-pygac.pod_reader">
+<span id="pod-series-reader"></span><h3>POD series reader<a class="headerlink" href="#module-pygac.pod_reader" title="Permalink to this headline">¶</a></h3>
+<p>POD file reading.</p>
+<p>Reads L1b GAC/LAC data from POD series of satellites (NOAA-14 and earlier).
+Format specification can be found in chapters 2 &amp; 3 of the <a class="reference external" href="https://www.ncei.noaa.gov/pub/data/satellite/publications/podguides/TIROS-N%20thru%20N-14/">POD user guide</a>.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="pygac.pod_reader.PODReader">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pygac.pod_reader.</span></span><span class="sig-name descname"><span class="pre">PODReader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">interpolate_coords</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adjust_clock_drift</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tle_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tle_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tle_thresh</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">7</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">creation_site</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_calibration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calibration_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygac.pod_reader.PODReader" title="Permalink to this definition">¶</a></dt>
+<dd><p>The POD reader.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygac.pod_reader.PODReader.QFlag">
+<span class="sig-name descname"><span class="pre">QFlag</span></span><a class="headerlink" href="#pygac.pod_reader.PODReader.QFlag" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#pygac.pod_reader.POD_QualityIndicator" title="pygac.pod_reader.POD_QualityIndicator"><code class="xref py py-class docutils literal notranslate"><span class="pre">pygac.pod_reader.POD_QualityIndicator</span></code></a></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygac.pod_reader.PODReader.correct_scan_line_numbers">
+<span class="sig-name descname"><span class="pre">correct_scan_line_numbers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pygac.pod_reader.PODReader.correct_scan_line_numbers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Correct the scan line numbers.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygac.pod_reader.PODReader.decode_timestamps">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">decode_timestamps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">encoded</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygac.pod_reader.PODReader.decode_timestamps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decode timestamps.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>year
+day of year
+milliseconds since 00:00</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygac.pod_reader.PODReader.get_header_timestamp">
+<span class="sig-name descname"><span class="pre">get_header_timestamp</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pygac.pod_reader.PODReader.get_header_timestamp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the timestamp from the header.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>A datetime object containing the timestamp from the header.</p>
+</dd>
+<dt>Raises:</dt><dd><p>A ValueError if the timestamp is corrupt.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygac.pod_reader.PODReader.get_telemetry">
+<span class="sig-name descname"><span class="pre">get_telemetry</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pygac.pod_reader.PODReader.get_telemetry" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the telemetry.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>prt_counts: np.array
+ict_counts: np.array
+space_counts: np.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygac.pod_reader.PODReader.get_tsm_pixels">
+<span class="sig-name descname"><span class="pre">get_tsm_pixels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channels</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygac.pod_reader.PODReader.get_tsm_pixels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determine pixels affected by the scan motor issue.</p>
+<p>Uses channels 1, 2, 4 and 5. Neither 3a, nor 3b.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygac.pod_reader.PODReader.postproc">
+<span class="sig-name descname"><span class="pre">postproc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channels</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygac.pod_reader.PODReader.postproc" title="Permalink to this definition">¶</a></dt>
+<dd><p>No POD specific postprocessing to be done.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygac.pod_reader.PODReader.read">
+<span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fileobj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygac.pod_reader.PODReader.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read the data.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>filename (str): Path to GAC/LAC file
+fileobj: An open file object to read from. (optional)</p>
+</dd>
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>header: numpy record array</dt><dd><p>The header metadata</p>
+</dd>
+<dt>scans: numpy record array</dt><dd><p>The scanlines</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygac.pod_reader.PODReader.read_header">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read_header</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fileobj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygac.pod_reader.PODReader.read_header" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read the file header.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>filename (str): Path to GAC/LAC file
+fileobj: An open file object to read from. (optional)</p>
+</dd>
+<dt>Returns:</dt><dd><p>archive_header (struct): archive header
+header (struct): file header</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygac.pod_reader.PODReader.spacecraft_names">
+<span class="sig-name descname"><span class="pre">spacecraft_names</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{1:</span> <span class="pre">'noaa11',</span> <span class="pre">2:</span> <span class="pre">'noaa6',</span> <span class="pre">3:</span> <span class="pre">'noaa14',</span> <span class="pre">4:</span> <span class="pre">'noaa7',</span> <span class="pre">5:</span> <span class="pre">'noaa12',</span> <span class="pre">6:</span> <span class="pre">'noaa8',</span> <span class="pre">7:</span> <span class="pre">'noaa9',</span> <span class="pre">8:</span> <span class="pre">'noaa10',</span> <span class="pre">25:</span> <span class="pre">'tirosn'}</span></em><a class="headerlink" href="#pygac.pod_reader.PODReader.spacecraft_names" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygac.pod_reader.PODReader.spacecrafts_orbital">
+<span class="sig-name descname"><span class="pre">spacecrafts_orbital</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{1:</span> <span class="pre">'noaa</span> <span class="pre">11',</span> <span class="pre">2:</span> <span class="pre">'noaa</span> <span class="pre">6',</span> <span class="pre">3:</span> <span class="pre">'noaa</span> <span class="pre">14',</span> <span class="pre">4:</span> <span class="pre">'noaa</span> <span class="pre">7',</span> <span class="pre">5:</span> <span class="pre">'noaa</span> <span class="pre">12',</span> <span class="pre">6:</span> <span class="pre">'noaa</span> <span class="pre">8',</span> <span class="pre">7:</span> <span class="pre">'noaa</span> <span class="pre">9',</span> <span class="pre">8:</span> <span class="pre">'noaa</span> <span class="pre">10',</span> <span class="pre">25:</span> <span class="pre">'tiros</span> <span class="pre">n'}</span></em><a class="headerlink" href="#pygac.pod_reader.PODReader.spacecrafts_orbital" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pygac.pod_reader.POD_QualityIndicator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pygac.pod_reader.</span></span><span class="sig-name descname"><span class="pre">POD_QualityIndicator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygac.pod_reader.POD_QualityIndicator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Quality Indicators.</p>
+<dl class="simple">
+<dt>Source:</dt><dd><p>POD guide Table 3.1.2.1-2. Format of quality indicators.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygac.pod_reader.POD_QualityIndicator.ASCEND_DESCEND">
+<span class="sig-name descname"><span class="pre">ASCEND_DESCEND</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">33554432</span></em><a class="headerlink" href="#pygac.pod_reader.POD_QualityIndicator.ASCEND_DESCEND" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygac.pod_reader.POD_QualityIndicator.BIT_SLIPPAGE">
+<span class="sig-name descname"><span class="pre">BIT_SLIPPAGE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">524288</span></em><a class="headerlink" href="#pygac.pod_reader.POD_QualityIndicator.BIT_SLIPPAGE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygac.pod_reader.POD_QualityIndicator.BIT_SYNC_STATUS">
+<span class="sig-name descname"><span class="pre">BIT_SYNC_STATUS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">8388608</span></em><a class="headerlink" href="#pygac.pod_reader.POD_QualityIndicator.BIT_SYNC_STATUS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygac.pod_reader.POD_QualityIndicator.CALIBRATION">
+<span class="sig-name descname"><span class="pre">CALIBRATION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">134217728</span></em><a class="headerlink" href="#pygac.pod_reader.POD_QualityIndicator.CALIBRATION" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygac.pod_reader.POD_QualityIndicator.CH_3_CONTAMINATION">
+<span class="sig-name descname"><span class="pre">CH_3_CONTAMINATION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">262144</span></em><a class="headerlink" href="#pygac.pod_reader.POD_QualityIndicator.CH_3_CONTAMINATION" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygac.pod_reader.POD_QualityIndicator.CH_4_CONTAMINATION">
+<span class="sig-name descname"><span class="pre">CH_4_CONTAMINATION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">131072</span></em><a class="headerlink" href="#pygac.pod_reader.POD_QualityIndicator.CH_4_CONTAMINATION" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygac.pod_reader.POD_QualityIndicator.CH_5_CONTAMINATION">
+<span class="sig-name descname"><span class="pre">CH_5_CONTAMINATION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">65536</span></em><a class="headerlink" href="#pygac.pod_reader.POD_QualityIndicator.CH_5_CONTAMINATION" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygac.pod_reader.POD_QualityIndicator.DATA_GAP">
+<span class="sig-name descname"><span class="pre">DATA_GAP</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">536870912</span></em><a class="headerlink" href="#pygac.pod_reader.POD_QualityIndicator.DATA_GAP" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygac.pod_reader.POD_QualityIndicator.DATA_JITTER">
+<span class="sig-name descname"><span class="pre">DATA_JITTER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">268435456</span></em><a class="headerlink" href="#pygac.pod_reader.POD_QualityIndicator.DATA_JITTER" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygac.pod_reader.POD_QualityIndicator.FATAL_FLAG">
+<span class="sig-name descname"><span class="pre">FATAL_FLAG</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2147483648</span></em><a class="headerlink" href="#pygac.pod_reader.POD_QualityIndicator.FATAL_FLAG" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygac.pod_reader.POD_QualityIndicator.FLYWHEELING">
+<span class="sig-name descname"><span class="pre">FLYWHEELING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1048576</span></em><a class="headerlink" href="#pygac.pod_reader.POD_QualityIndicator.FLYWHEELING" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygac.pod_reader.POD_QualityIndicator.FRAME_SYNC_LOCK">
+<span class="sig-name descname"><span class="pre">FRAME_SYNC_LOCK</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2097152</span></em><a class="headerlink" href="#pygac.pod_reader.POD_QualityIndicator.FRAME_SYNC_LOCK" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygac.pod_reader.POD_QualityIndicator.NO_EARTH_LOCATION">
+<span class="sig-name descname"><span class="pre">NO_EARTH_LOCATION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">67108864</span></em><a class="headerlink" href="#pygac.pod_reader.POD_QualityIndicator.NO_EARTH_LOCATION" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygac.pod_reader.POD_QualityIndicator.PSEUDO_NOISE">
+<span class="sig-name descname"><span class="pre">PSEUDO_NOISE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">16777216</span></em><a class="headerlink" href="#pygac.pod_reader.POD_QualityIndicator.PSEUDO_NOISE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygac.pod_reader.POD_QualityIndicator.SYNC_ERROR">
+<span class="sig-name descname"><span class="pre">SYNC_ERROR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4194304</span></em><a class="headerlink" href="#pygac.pod_reader.POD_QualityIndicator.SYNC_ERROR" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygac.pod_reader.POD_QualityIndicator.TIME_ERROR">
+<span class="sig-name descname"><span class="pre">TIME_ERROR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1073741824</span></em><a class="headerlink" href="#pygac.pod_reader.POD_QualityIndicator.TIME_ERROR" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygac.pod_reader.POD_QualityIndicator.TIP_PARITY_1">
+<span class="sig-name descname"><span class="pre">TIP_PARITY_1</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">32768</span></em><a class="headerlink" href="#pygac.pod_reader.POD_QualityIndicator.TIP_PARITY_1" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygac.pod_reader.POD_QualityIndicator.TIP_PARITY_2">
+<span class="sig-name descname"><span class="pre">TIP_PARITY_2</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">16384</span></em><a class="headerlink" href="#pygac.pod_reader.POD_QualityIndicator.TIP_PARITY_2" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygac.pod_reader.POD_QualityIndicator.TIP_PARITY_3">
+<span class="sig-name descname"><span class="pre">TIP_PARITY_3</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">8192</span></em><a class="headerlink" href="#pygac.pod_reader.POD_QualityIndicator.TIP_PARITY_3" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygac.pod_reader.POD_QualityIndicator.TIP_PARITY_4">
+<span class="sig-name descname"><span class="pre">TIP_PARITY_4</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4096</span></em><a class="headerlink" href="#pygac.pod_reader.POD_QualityIndicator.TIP_PARITY_4" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygac.pod_reader.POD_QualityIndicator.TIP_PARITY_5">
+<span class="sig-name descname"><span class="pre">TIP_PARITY_5</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2048</span></em><a class="headerlink" href="#pygac.pod_reader.POD_QualityIndicator.TIP_PARITY_5" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pygac.pod_reader.main_pod">
+<span class="sig-prename descclassname"><span class="pre">pygac.pod_reader.</span></span><span class="sig-name descname"><span class="pre">main_pod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reader_cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_line</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygac.pod_reader.main_pod" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a l1c file.</p>
+</dd></dl>
+
+</section>
+<section id="module-pygac.klm_reader">
+<span id="klm-series-reader"></span><h3>KLM series reader<a class="headerlink" href="#module-pygac.klm_reader" title="Permalink to this headline">¶</a></h3>
+<p>Read KLM data.</p>
+<p>Reads L1b GAC/LAC data from KLM series of satellites (NOAA-15 and later).
+Format specification can be found in section 8 of the <a class="reference external" href="https://www.ncei.noaa.gov/pub/data/satellite/publications/podguides/N-15%20thru%20N-19/">KLM user guide</a>.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="pygac.klm_reader.KLMReader">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pygac.klm_reader.</span></span><span class="sig-name descname"><span class="pre">KLMReader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">interpolate_coords</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adjust_clock_drift</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tle_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tle_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tle_thresh</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">7</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">creation_site</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_calibration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calibration_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygac.klm_reader.KLMReader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reader for KLM data.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygac.klm_reader.KLMReader.QFlag">
+<span class="sig-name descname"><span class="pre">QFlag</span></span><a class="headerlink" href="#pygac.klm_reader.KLMReader.QFlag" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#pygac.klm_reader.KLM_QualityIndicator" title="pygac.klm_reader.KLM_QualityIndicator"><code class="xref py py-class docutils literal notranslate"><span class="pre">pygac.klm_reader.KLM_QualityIndicator</span></code></a></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygac.klm_reader.KLMReader.get_ch3_switch">
+<span class="sig-name descname"><span class="pre">get_ch3_switch</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pygac.klm_reader.KLMReader.get_ch3_switch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Channel 3 identification.</p>
+<p>0: Channel 3b (Brightness temperature
+1: Channel 3a (Reflectance)
+2: Transition (No data)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygac.klm_reader.KLMReader.get_header_timestamp">
+<span class="sig-name descname"><span class="pre">get_header_timestamp</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pygac.klm_reader.KLMReader.get_header_timestamp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the timestamp from the header.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>A datetime object containing the timestamp from the header.</p>
+</dd>
+<dt>Raises:</dt><dd><p>A ValueError if the timestamp is corrupt.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygac.klm_reader.KLMReader.get_telemetry">
+<span class="sig-name descname"><span class="pre">get_telemetry</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pygac.klm_reader.KLMReader.get_telemetry" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the telemetry.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>prt_counts: np.array
+ict_counts: np.array
+space_counts: np.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygac.klm_reader.KLMReader.get_tsm_pixels">
+<span class="sig-name descname"><span class="pre">get_tsm_pixels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channels</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygac.klm_reader.KLMReader.get_tsm_pixels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determine pixels affected by the scan motor issue.</p>
+<p>Uses channels 1, 2, 4 and 5. Neither 3a, nor 3b.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygac.klm_reader.KLMReader.postproc">
+<span class="sig-name descname"><span class="pre">postproc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channels</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygac.klm_reader.KLMReader.postproc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply KLM specific postprocessing.</p>
+<p>Masking out 3a/3b/transition.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygac.klm_reader.KLMReader.read">
+<span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fileobj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygac.klm_reader.KLMReader.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read the data.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>filename: Path to GAC/LAC file
+fileobj: An open file object to read from. (optional)</p>
+</dd>
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>header: numpy record array</dt><dd><p>The header metadata</p>
+</dd>
+<dt>scans: numpy record array</dt><dd><p>The scanlines</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pygac.klm_reader.KLMReader.read_header">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read_header</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fileobj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygac.klm_reader.KLMReader.read_header" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read the file header.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>filename (str): Path to GAC/LAC file
+fileobj: An open file object to read from. (optional)</p>
+</dd>
+<dt>Returns:</dt><dd><p>archive_header (struct): archive header
+header (struct): file header</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygac.klm_reader.KLMReader.spacecraft_names">
+<span class="sig-name descname"><span class="pre">spacecraft_names</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{2:</span> <span class="pre">'noaa16',</span> <span class="pre">4:</span> <span class="pre">'noaa15',</span> <span class="pre">6:</span> <span class="pre">'noaa17',</span> <span class="pre">7:</span> <span class="pre">'noaa18',</span> <span class="pre">8:</span> <span class="pre">'noaa19',</span> <span class="pre">11:</span> <span class="pre">'metopb',</span> <span class="pre">12:</span> <span class="pre">'metopa',</span> <span class="pre">13:</span> <span class="pre">'metopc'}</span></em><a class="headerlink" href="#pygac.klm_reader.KLMReader.spacecraft_names" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygac.klm_reader.KLMReader.spacecrafts_orbital">
+<span class="sig-name descname"><span class="pre">spacecrafts_orbital</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{2:</span> <span class="pre">'noaa</span> <span class="pre">16',</span> <span class="pre">4:</span> <span class="pre">'noaa</span> <span class="pre">15',</span> <span class="pre">6:</span> <span class="pre">'noaa</span> <span class="pre">17',</span> <span class="pre">7:</span> <span class="pre">'noaa</span> <span class="pre">18',</span> <span class="pre">8:</span> <span class="pre">'noaa</span> <span class="pre">19',</span> <span class="pre">11:</span> <span class="pre">'metop</span> <span class="pre">01',</span> <span class="pre">12:</span> <span class="pre">'metop</span> <span class="pre">02',</span> <span class="pre">13:</span> <span class="pre">'metop</span> <span class="pre">03'}</span></em><a class="headerlink" href="#pygac.klm_reader.KLMReader.spacecrafts_orbital" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pygac.klm_reader.KLM_QualityIndicator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pygac.klm_reader.</span></span><span class="sig-name descname"><span class="pre">KLM_QualityIndicator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygac.klm_reader.KLM_QualityIndicator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Quality Indicators.</p>
+<p>Source: KLM guide</p>
+<ul class="simple">
+<li><p>Table 8.3.1.3.3.1-1. Format of packed LAC/HRPT Data Sets (Version 2,
+pre-April 28, 2005).</p></li>
+<li><p>Table 8.3.1.3.3.2-1. Format of LAC/HRPT Data Record for NOAA-N
+(Version 5, post-November 14, 2006, all spacecraft).</p></li>
+<li><p>Table 8.3.1.4.3.1-1. Format of packed GAC Data Record for NOAA KLM
+(Version 2, pre-April 28, 2005).</p></li>
+<li><p>Table 8.3.1.4.3.2-1. Format of GAC Data Record for NOAA-N (Version 4,
+post-January 25, 2006, all spacecraft).</p></li>
+</ul>
+<p>Notes:</p>
+<ul class="simple">
+<li><p>Table 8.3.1.3.3.1-1. and Table 8.3.1.4.3.1-1. define bit: 21 as
+“frame sync word not valid”</p></li>
+<li><p>Table 8.3.1.3.3.2-1. and Table 8.3.1.4.3.2-1. define bit: 21 as
+“flywheeling detected during this frame”</p></li>
+</ul>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygac.klm_reader.KLM_QualityIndicator.BIT_SLIPPAGE">
+<span class="sig-name descname"><span class="pre">BIT_SLIPPAGE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1048576</span></em><a class="headerlink" href="#pygac.klm_reader.KLM_QualityIndicator.BIT_SLIPPAGE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygac.klm_reader.KLM_QualityIndicator.BIT_SYNC_STATUS">
+<span class="sig-name descname"><span class="pre">BIT_SYNC_STATUS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">16777216</span></em><a class="headerlink" href="#pygac.klm_reader.KLM_QualityIndicator.BIT_SYNC_STATUS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygac.klm_reader.KLM_QualityIndicator.CALIBRATION">
+<span class="sig-name descname"><span class="pre">CALIBRATION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">268435456</span></em><a class="headerlink" href="#pygac.klm_reader.KLM_QualityIndicator.CALIBRATION" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygac.klm_reader.KLM_QualityIndicator.CH_3B_RS">
+<span class="sig-name descname"><span class="pre">CH_3B_RS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">128</span></em><a class="headerlink" href="#pygac.klm_reader.KLM_QualityIndicator.CH_3B_RS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygac.klm_reader.KLM_QualityIndicator.CH_3B_RS_ANOMALY">
+<span class="sig-name descname"><span class="pre">CH_3B_RS_ANOMALY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">64</span></em><a class="headerlink" href="#pygac.klm_reader.KLM_QualityIndicator.CH_3B_RS_ANOMALY" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygac.klm_reader.KLM_QualityIndicator.CH_3_CONTAMINATION">
+<span class="sig-name descname"><span class="pre">CH_3_CONTAMINATION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">192</span></em><a class="headerlink" href="#pygac.klm_reader.KLM_QualityIndicator.CH_3_CONTAMINATION" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygac.klm_reader.KLM_QualityIndicator.CH_4_CONTAMINATION">
+<span class="sig-name descname"><span class="pre">CH_4_CONTAMINATION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">48</span></em><a class="headerlink" href="#pygac.klm_reader.KLM_QualityIndicator.CH_4_CONTAMINATION" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygac.klm_reader.KLM_QualityIndicator.CH_4_RS">
+<span class="sig-name descname"><span class="pre">CH_4_RS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">32</span></em><a class="headerlink" href="#pygac.klm_reader.KLM_QualityIndicator.CH_4_RS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygac.klm_reader.KLM_QualityIndicator.CH_4_RS_ANOMALY">
+<span class="sig-name descname"><span class="pre">CH_4_RS_ANOMALY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">16</span></em><a class="headerlink" href="#pygac.klm_reader.KLM_QualityIndicator.CH_4_RS_ANOMALY" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygac.klm_reader.KLM_QualityIndicator.CH_5_CONTAMINATION">
+<span class="sig-name descname"><span class="pre">CH_5_CONTAMINATION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">12</span></em><a class="headerlink" href="#pygac.klm_reader.KLM_QualityIndicator.CH_5_CONTAMINATION" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygac.klm_reader.KLM_QualityIndicator.CH_5_RS">
+<span class="sig-name descname"><span class="pre">CH_5_RS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">8</span></em><a class="headerlink" href="#pygac.klm_reader.KLM_QualityIndicator.CH_5_RS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygac.klm_reader.KLM_QualityIndicator.CH_5_RS_ANOMALY">
+<span class="sig-name descname"><span class="pre">CH_5_RS_ANOMALY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#pygac.klm_reader.KLM_QualityIndicator.CH_5_RS_ANOMALY" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygac.klm_reader.KLM_QualityIndicator.CLOCK_UPDATE">
+<span class="sig-name descname"><span class="pre">CLOCK_UPDATE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">67108864</span></em><a class="headerlink" href="#pygac.klm_reader.KLM_QualityIndicator.CLOCK_UPDATE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygac.klm_reader.KLM_QualityIndicator.DATA_GAP">
+<span class="sig-name descname"><span class="pre">DATA_GAP</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">536870912</span></em><a class="headerlink" href="#pygac.klm_reader.KLM_QualityIndicator.DATA_GAP" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygac.klm_reader.KLM_QualityIndicator.DATA_JITTER">
+<span class="sig-name descname"><span class="pre">DATA_JITTER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#pygac.klm_reader.KLM_QualityIndicator.DATA_JITTER" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygac.klm_reader.KLM_QualityIndicator.FATAL_FLAG">
+<span class="sig-name descname"><span class="pre">FATAL_FLAG</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2147483648</span></em><a class="headerlink" href="#pygac.klm_reader.KLM_QualityIndicator.FATAL_FLAG" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygac.klm_reader.KLM_QualityIndicator.FLYWHEELING">
+<span class="sig-name descname"><span class="pre">FLYWHEELING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2097152</span></em><a class="headerlink" href="#pygac.klm_reader.KLM_QualityIndicator.FLYWHEELING" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygac.klm_reader.KLM_QualityIndicator.FRAME_SYNC_LOCK">
+<span class="sig-name descname"><span class="pre">FRAME_SYNC_LOCK</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4194304</span></em><a class="headerlink" href="#pygac.klm_reader.KLM_QualityIndicator.FRAME_SYNC_LOCK" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygac.klm_reader.KLM_QualityIndicator.INSTRUMENT_CHANGE">
+<span class="sig-name descname"><span class="pre">INSTRUMENT_CHANGE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">33554432</span></em><a class="headerlink" href="#pygac.klm_reader.KLM_QualityIndicator.INSTRUMENT_CHANGE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygac.klm_reader.KLM_QualityIndicator.NO_EARTH_LOCATION">
+<span class="sig-name descname"><span class="pre">NO_EARTH_LOCATION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">134217728</span></em><a class="headerlink" href="#pygac.klm_reader.KLM_QualityIndicator.NO_EARTH_LOCATION" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygac.klm_reader.KLM_QualityIndicator.PSEUDO_NOISE">
+<span class="sig-name descname"><span class="pre">PSEUDO_NOISE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#pygac.klm_reader.KLM_QualityIndicator.PSEUDO_NOISE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygac.klm_reader.KLM_QualityIndicator.SYNC_ERROR">
+<span class="sig-name descname"><span class="pre">SYNC_ERROR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">8388608</span></em><a class="headerlink" href="#pygac.klm_reader.KLM_QualityIndicator.SYNC_ERROR" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygac.klm_reader.KLM_QualityIndicator.SYNC_INVALID">
+<span class="sig-name descname"><span class="pre">SYNC_INVALID</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2097152</span></em><a class="headerlink" href="#pygac.klm_reader.KLM_QualityIndicator.SYNC_INVALID" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygac.klm_reader.KLM_QualityIndicator.TIME_ERROR">
+<span class="sig-name descname"><span class="pre">TIME_ERROR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1073741824</span></em><a class="headerlink" href="#pygac.klm_reader.KLM_QualityIndicator.TIME_ERROR" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pygac.klm_reader.KLM_QualityIndicator.TIP_PARITY">
+<span class="sig-name descname"><span class="pre">TIP_PARITY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">256</span></em><a class="headerlink" href="#pygac.klm_reader.KLM_QualityIndicator.TIP_PARITY" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pygac.klm_reader.main_klm">
+<span class="sig-prename descclassname"><span class="pre">pygac.klm_reader.</span></span><span class="sig-name descname"><span class="pre">main_klm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reader_cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_line</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygac.klm_reader.main_klm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a l1c file.</p>
+</dd></dl>
+
+</section>
+</section>
+<section id="actual-reader-implementations">
+<h2>Actual Reader Implementations<a class="headerlink" href="#actual-reader-implementations" title="Permalink to this headline">¶</a></h2>
+<p>Actual reader implementations building upon the base classes.</p>
+<section id="module-pygac.gac_pod">
+<span id="gac-pod-reader"></span><h3>GAC POD reader<a class="headerlink" href="#module-pygac.gac_pod" title="Permalink to this headline">¶</a></h3>
+<p>Reader for GAC POD data.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="pygac.gac_pod.GACPODReader">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pygac.gac_pod.</span></span><span class="sig-name descname"><span class="pre">GACPODReader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygac.gac_pod.GACPODReader" title="Permalink to this definition">¶</a></dt>
+<dd><p>The GAC POD reader class.</p>
+<p>The <cite>scan_points</cite> attributes provides the position of the longitude and latitude points to
+compute relative to the full swath width.</p>
+<p>The offset attribute tells where in the file the scanline data starts.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pygac.gac_pod.main">
+<span class="sig-prename descclassname"><span class="pre">pygac.gac_pod.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_line</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygac.gac_pod.main" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a l1c file.</p>
+</dd></dl>
+
+</section>
+<section id="module-pygac.gac_klm">
+<span id="gac-klm-reader"></span><h3>GAC KLM reader<a class="headerlink" href="#module-pygac.gac_klm" title="Permalink to this headline">¶</a></h3>
+<p>Reader for GAC KLM data.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="pygac.gac_klm.GACKLMReader">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pygac.gac_klm.</span></span><span class="sig-name descname"><span class="pre">GACKLMReader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygac.gac_klm.GACKLMReader" title="Permalink to this definition">¶</a></dt>
+<dd><p>The GAC KLM reader class.</p>
+<p>The offset attribute tells where in the file the scanline data starts.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pygac.gac_klm.main">
+<span class="sig-prename descclassname"><span class="pre">pygac.gac_klm.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_line</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygac.gac_klm.main" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a l1c file.</p>
+</dd></dl>
+
+</section>
+<section id="module-pygac.lac_pod">
+<span id="lac-pod-reader"></span><h3>LAC POD reader<a class="headerlink" href="#module-pygac.lac_pod" title="Permalink to this headline">¶</a></h3>
+<p>Reader for LAC POD data.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="pygac.lac_pod.LACPODReader">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pygac.lac_pod.</span></span><span class="sig-name descname"><span class="pre">LACPODReader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygac.lac_pod.LACPODReader" title="Permalink to this definition">¶</a></dt>
+<dd><p>The LAC POD reader.</p>
+<p>The <cite>scan_points</cite> attributes provides the position of the longitude and latitude points to
+compute relative to the full swath width.</p>
+<p>The offset attribute tells where in the file the scanline data starts.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pygac.lac_pod.main">
+<span class="sig-prename descclassname"><span class="pre">pygac.lac_pod.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_line</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygac.lac_pod.main" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a l1c file.</p>
+</dd></dl>
+
+</section>
+<section id="module-pygac.lac_klm">
+<span id="lac-klm-reader"></span><h3>LAC KLM reader<a class="headerlink" href="#module-pygac.lac_klm" title="Permalink to this headline">¶</a></h3>
+<p>Reader for LAC KLM data.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="pygac.lac_klm.LACKLMReader">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pygac.lac_klm.</span></span><span class="sig-name descname"><span class="pre">LACKLMReader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygac.lac_klm.LACKLMReader" title="Permalink to this definition">¶</a></dt>
+<dd><p>The LAC KLM reader.</p>
+<p>The offset attribute tells where in the file the scanline data starts.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pygac.lac_klm.main">
+<span class="sig-prename descclassname"><span class="pre">pygac.lac_klm.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_line</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pygac.lac_klm.main" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a l1c file.</p>
+</dd></dl>
+
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">The Pygac API</a><ul>
+<li><a class="reference internal" href="#base-classes">Base Classes</a><ul>
+<li><a class="reference internal" href="#module-pygac.reader">Reader</a></li>
+<li><a class="reference internal" href="#module-pygac.gac_reader">GAC format reader</a></li>
+<li><a class="reference internal" href="#module-pygac.lac_reader">LAC format reader</a></li>
+<li><a class="reference internal" href="#module-pygac.pod_reader">POD series reader</a></li>
+<li><a class="reference internal" href="#module-pygac.klm_reader">KLM series reader</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#actual-reader-implementations">Actual Reader Implementations</a><ul>
+<li><a class="reference internal" href="#module-pygac.gac_pod">GAC POD reader</a></li>
+<li><a class="reference internal" href="#module-pygac.gac_klm">GAC KLM reader</a></li>
+<li><a class="reference internal" href="#module-pygac.lac_pod">LAC POD reader</a></li>
+<li><a class="reference internal" href="#module-pygac.lac_klm">LAC KLM reader</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="methods.html"
+                        title="previous chapter">Methods</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="legacy.html"
+                        title="next chapter">Legacy Output</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/api.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="legacy.html" title="Legacy Output"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="methods.html" title="Methods"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">pygac 0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">The Pygac API</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2014, Abhay Devasthale, Martin Raspaud and Adam Dybbroe.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.1.
+    </div>
+  </body>
+</html>
