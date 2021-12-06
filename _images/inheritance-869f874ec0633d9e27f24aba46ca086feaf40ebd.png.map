@@ -1,0 +1,6 @@
+<map id="inheritance02943167b1" name="inheritance02943167b1">
+<area shape="rect" id="node1" href="#pygac.gac_pod.GACPODReader" target="_top" title="The GAC POD reader class." alt="" coords="471,31,695,56"/>
+<area shape="rect" id="node2" href="#pygac.gac_reader.GACReader" target="_top" title="Reader for GAC data." alt="" coords="209,5,422,31"/>
+<area shape="rect" id="node3" href="#pygac.pod_reader.PODReader" target="_top" title="The POD reader." alt="" coords="208,55,423,80"/>
+<area shape="rect" id="node4" href="#pygac.reader.Reader" target="_top" title="Reader for GAC and LAC format, POD and KLM platforms." alt="" coords="5,31,160,56"/>
+</map>

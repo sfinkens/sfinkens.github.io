@@ -1,0 +1,8 @@
+<map id="inheritanceda40d57fc2" name="inheritanceda40d57fc2">
+<area shape="rect" id="node1" href="#pygac.gac_klm.GACKLMReader" target="_top" title="The GAC KLM reader class." alt="" coords="471,19,695,44"/>
+<area shape="rect" id="node2" href="#pygac.gac_reader.GACReader" target="_top" title="Reader for GAC data." alt="" coords="209,55,422,80"/>
+<area shape="rect" id="node4" href="#pygac.gac_pod.GACPODReader" target="_top" title="The GAC POD reader class." alt="" coords="471,92,695,117"/>
+<area shape="rect" id="node3" href="#pygac.klm_reader.KLMReader" target="_top" title="Reader for KLM data." alt="" coords="208,5,423,31"/>
+<area shape="rect" id="node5" href="#pygac.pod_reader.PODReader" target="_top" title="The POD reader." alt="" coords="208,104,423,129"/>
+<area shape="rect" id="node6" href="#pygac.reader.Reader" target="_top" title="Reader for GAC and LAC format, POD and KLM platforms." alt="" coords="5,55,160,80"/>
+</map>
